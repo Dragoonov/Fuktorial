@@ -1,10 +1,13 @@
 package com.example.fuktorial.fucktivities.tutorial
 
+import android.content.DialogInterface
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
+import com.example.fuktorial.R
 import com.example.fuktorial.databinding.FragmentTutorialEntryBinding
 import com.example.fuktorial.startFucktivity
 
@@ -30,6 +33,14 @@ class TutorialEntryFragment : Fragment() {
         }
     }
 
-    private fun showBanner() = startFucktivity(TutorialLevelActivity::class.java)
+    private fun showBanner() =
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.congratulations)
+            .setMessage(R.string.tutorialMessage1)
+            .setPositiveButton(R.string.ok) { _: DialogInterface, _: Int ->
+                startFucktivity(TutorialLevelActivity::class.java)
+            }
+            .create()
+            .show()
 
 }

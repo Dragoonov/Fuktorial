@@ -20,4 +20,9 @@ class MainActivity : AppCompatActivity() {
             replaceFragment(TutorialEntryFragment::class.java)
         }
     }
+
+    override fun onStart() {
+        super.onStart()
+
+    }
 }
