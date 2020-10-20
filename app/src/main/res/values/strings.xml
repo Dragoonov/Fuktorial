@@ -20,4 +20,5 @@
     <string name="ok">OK</string>
     <string name="welcome">Welcome!</string>
     <string name="explanation">You just discovered a Fucktivity! Discovered Discovered Fucktivities can be found in your Collections. Now pass the Fucktivity to receive a reward - a Fuquote!</string>
+    <string name="fuquotes_notifications">Enable fuquotes notifications</string>
 </resources>

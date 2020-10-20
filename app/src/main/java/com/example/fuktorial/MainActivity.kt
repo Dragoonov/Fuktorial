@@ -19,10 +19,14 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             replaceFragment(TutorialEntryFragment::class.java)
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-
+        binding.bottomNavigationView.setOnNavigationItemSelectedListener {
+            when(it.itemId) {
+                R.id.fucktivity -> replaceFragment(TutorialEntryFragment::class.java)
+                R.id.tasks -> Unit
+                R.id.collection -> Unit
+                R.id.settings -> replaceFragment(SettingsFragment::class.java)
+            }
+            true
+        }
     }
 }
