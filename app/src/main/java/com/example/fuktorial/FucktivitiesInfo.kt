@@ -4,7 +4,7 @@ import android.app.Activity
 import com.example.fuktorial.fucktivities.tutorial.TutorialLevelActivity
 
 object FucktivitiesInfo {
-    private val fucktivitiesList = listOf(
+    val fucktivitiesList = listOf(
         TutorialLevelActivity::class.java
     )
 

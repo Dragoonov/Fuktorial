@@ -7,12 +7,12 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.commit
 
 fun<T : Fragment> FragmentActivity.replaceFragment(fragmentClass: Class<T>) {
-    val TAG = "Current Fragment"
+    val tag = "Current Fragment"
     supportFragmentManager.commit {
         if (supportFragmentManager.backStackEntryCount == 0) {
-            add(R.id.fragment_container, fragmentClass, null, TAG)
+            add(R.id.fragment_container, fragmentClass, null, tag)
         } else {
-            replace(R.id.fragment_container, fragmentClass, null, TAG)
+            replace(R.id.fragment_container, fragmentClass, null, tag)
         }
         addToBackStack(null)
     }
