@@ -12,5 +12,13 @@
             app:isPreferenceVisible="false"
             />
 
+        <Preference
+            app:key="fuquotes_discovered" />
+
+        <Preference
+            app:key="fucktivities_discovered" />
+        <Preference
+            app:key="fucktivities_mastered" />
+
     </PreferenceCategory>
 </PreferenceScreen>

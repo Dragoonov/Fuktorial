@@ -7,6 +7,8 @@ import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
+import com.example.fuktorial.database.Repository
+import com.example.fuktorial.database.RepositoryImpl
 import com.example.fuktorial.databinding.ActivityMainBinding
 import com.example.fuktorial.fucktivities.tutorial.TutorialEntryFragment
 
