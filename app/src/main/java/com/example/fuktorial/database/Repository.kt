@@ -8,11 +8,13 @@ import io.reactivex.rxjava3.core.Observable
 interface Repository {
     fun open()
     fun close()
-    fun discoverQuote(): Completable
-    fun discoverFucktivity(): Completable
-    fun masterFucktivity(): Completable
+    fun insertFuquote(fuquote: Fuquote): Completable
+    fun updateFuquote(fuquote: Fuquote): Completable
+    fun updateFucktivity(fucktivity: Fucktivity): Completable
+    fun insertFucktivity(fucktivity: Fucktivity): Completable
     fun resetProgress(): Completable
     fun getDiscoveredFucktivities(): Observable<List<Fucktivity>>
+    fun getMasteredFucktivities(): Observable<List<Fucktivity>>
     fun getAllFucktivities(): Observable<List<Fucktivity>>
     fun getDiscoveredFuquotes(): Observable<List<Fuquote>>
     fun getAllFuquotes(): Observable<List<Fuquote>>
