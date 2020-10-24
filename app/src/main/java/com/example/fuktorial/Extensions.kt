@@ -46,7 +46,7 @@ fun SQLiteDatabase.createAndInitialize() {
         "CREATE TABLE ${FuktorialContract.Fucktivities.TABLE_NAME} (" +
                 "${BaseColumns._ID} INTEGER PRIMARY KEY," +
                 "${FuktorialContract.Fucktivities.COLUMN_NAME_NAME} TEXT," +
-                "${FuktorialContract.Fucktivities.COLUMN_NAME_DISCOVERED} INTEGER)," +
+                "${FuktorialContract.Fucktivities.COLUMN_NAME_DISCOVERED} INTEGER," +
                 "${FuktorialContract.Fucktivities.COLUMN_NAME_MASTERED} INTEGER)"
 
     execSQL(sqlCreateFuquotes)
@@ -77,3 +77,5 @@ fun SQLiteDatabase.resetProgress() {
     clearDatabase()
     createAndInitialize()
 }
+
+fun Activity.getViewModel() = (this as MainActivity).viewModel

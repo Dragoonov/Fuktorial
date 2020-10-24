@@ -21,6 +21,11 @@
     <string name="welcome">Welcome!</string>
     <string name="explanation">You just discovered a Fucktivity! Discovered Discovered Fucktivities can be found in your Collections. Now pass the Fucktivity to receive a reward - a Fuquote!</string>
     <string name="fuquotes_notifications">Enable fuquotes notifications</string>
-    <string name="fuquotes_discovered">%d/%d fuquotes discovered</string>
+    <string name="fuquotes_discovered">%d/%d Fuquotes discovered</string>
+    <string name="fucktivities_discovered">%d/%d Fucktivities discovered</string>
+    <string name="fucktivities_mastered">%d/%d Fucktivities mastered</string>
+    <string name="statistics">Statistics</string>
+    <string name="fucktivities">Fucktivities</string>
+    <string name="fuquotes">Fuquotes</string>
 
 </resources>

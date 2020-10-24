@@ -1,24 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
         app:key="notifications_category"
         app:title="Notifications">
 
         <SwitchPreferenceCompat
-            app:key="notifications"
-            app:title="@string/fuquotes_notifications"
             app:isPreferenceVisible="false"
-            />
+            app:key="notifications"
+            app:title="@string/fuquotes_notifications" />
 
-        <Preference
-            app:key="fuquotes_discovered" />
-
-        <Preference
-            app:key="fucktivities_discovered" />
-        <Preference
-            app:key="fucktivities_mastered" />
+        <PreferenceCategory app:title="@string/statistics">
+            <Preference app:key="fuquotes"
+                app:title="@string/fuquotes"/>
+            <Preference app:key="fucktivities"
+                app:title="@string/fucktivities"/>
+        </PreferenceCategory>
 
     </PreferenceCategory>
 </PreferenceScreen>
