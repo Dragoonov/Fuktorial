@@ -8,6 +8,7 @@ import android.provider.BaseColumns
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.commit
+import androidx.preference.Preference
 import com.example.fuktorial.database.FuktorialContract
 
 fun<T : Fragment> FragmentActivity.replaceFragment(fragmentClass: Class<T>) {

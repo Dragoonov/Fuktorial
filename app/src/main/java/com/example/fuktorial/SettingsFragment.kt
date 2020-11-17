@@ -14,18 +14,23 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private var discoveredFucktivitiesSize = -1
     private var masteredFucktivitiesSize = -1
     private var discoveredFuquotesSize = -1
+    private var fucktivitiesPreference: Preference? = null
+    private var fuquotesPreference: Preference? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val viewModel = activity?.getViewModel()!!.apply {
+        activity?.getViewModel()!!.apply {
             discoveredFucktivities.observe(viewLifecycleOwner, Observer {
                 discoveredFucktivitiesSize = it.size
+                updateFucktivitesSummary()
             })
             masteredFucktivities.observe(viewLifecycleOwner, Observer {
                 masteredFucktivitiesSize = it.size
+                updateFucktivitesSummary()
             })
             discoveredFuquotes.observe(viewLifecycleOwner, Observer {
                 discoveredFuquotesSize = it.size
+                updateFuquotesSummary()
             })
         }
 
@@ -40,25 +45,31 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 true
             }
         }
-        findPreference<Preference>("fuquotes")!!.apply {
-            summary = getString(
-                R.string.fuquotes_discovered,
-                discoveredFuquotesSize,
-                FuquotesInfo.fuquotesList.size
-            )
-        }
-        findPreference<Preference>("fucktivities")!!.apply {
-            summary = getString(
-                R.string.fucktivities_discovered,
-                discoveredFucktivitiesSize,
-                FucktivitiesInfo.fucktivitiesList.size
-            ) + "\n" +
-                    getString(
-                        R.string.fucktivities_mastered,
-                        masteredFucktivitiesSize,
-                        FucktivitiesInfo.fucktivitiesList.size
-                    )
-        }
+        fuquotesPreference = findPreference("fuquotes")
+        fucktivitiesPreference = findPreference("fucktivities")
+        updateFucktivitesSummary()
+        updateFuquotesSummary()
+    }
+
+    private fun updateFucktivitesSummary() {
+        fucktivitiesPreference?.summary = getString(
+            R.string.fucktivities_discovered,
+            discoveredFucktivitiesSize,
+            FucktivitiesInfo.fucktivitiesList.size
+        ) + "\n" +
+                getString(
+                    R.string.fucktivities_mastered,
+                    masteredFucktivitiesSize,
+                    FucktivitiesInfo.fucktivitiesList.size
+                )
+    }
+
+    private fun updateFuquotesSummary() {
+        fuquotesPreference?.summary = getString(
+            R.string.fuquotes_discovered,
+            discoveredFuquotesSize,
+            FuquotesInfo.fuquotesList.size
+        )
     }
 }
 
