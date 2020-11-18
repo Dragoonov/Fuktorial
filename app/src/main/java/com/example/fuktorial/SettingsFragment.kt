@@ -7,7 +7,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.fuktorial.database.models.Fucktivity
+import com.example.fuktorial.notifications.NotificationWorker
+import java.util.concurrent.TimeUnit
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
@@ -39,9 +44,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_screen, rootKey)
         findPreference<SwitchPreferenceCompat>("notifications")?.apply {
-            isVisible = true
-            setOnPreferenceChangeListener { preference, newValue ->
-                //TODO Set WorkManager + hide god mode
+            setOnPreferenceChangeListener { _, newValue ->
+                getViewModel().enableNotifications(newValue as Boolean)
                 true
             }
         }

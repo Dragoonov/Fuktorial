@@ -6,8 +6,8 @@
         app:title="Notifications">
 
         <SwitchPreferenceCompat
-            app:isPreferenceVisible="false"
             app:key="notifications"
+            app:defaultValue="true"
             app:title="@string/fuquotes_notifications" />
 
         <PreferenceCategory app:title="@string/statistics">

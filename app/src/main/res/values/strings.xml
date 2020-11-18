@@ -27,5 +27,7 @@
     <string name="statistics">Statistics</string>
     <string name="fucktivities">Fucktivities</string>
     <string name="fuquotes">Fuquotes</string>
+    <string name="claim_fuquote">Claim your Fuquote!</string>
+    <string name="claim">Claim</string>
 
 </resources>

@@ -18,4 +18,6 @@ interface Repository {
     fun getAllFucktivities(): Observable<List<Fucktivity>>
     fun getDiscoveredFuquotes(): Observable<List<Fuquote>>
     fun getAllFuquotes(): Observable<List<Fuquote>>
+    fun getUndicoveredFucktivities(): Observable<List<Fucktivity>>
+    fun getUndiscoveredFuquotes(): Observable<List<Fuquote>>
 }

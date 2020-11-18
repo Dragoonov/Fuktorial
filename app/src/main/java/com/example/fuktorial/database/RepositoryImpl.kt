@@ -97,6 +97,12 @@ class RepositoryImpl(private val context: Context) : Repository {
     override fun getDiscoveredFuquotes(): Observable<List<Fuquote>> = allFuquotes
         .map { it.filter { fuquote -> fuquote.discovered } }
 
+    override fun getUndicoveredFucktivities(): Observable<List<Fucktivity>> = allFucktivities
+        .map { it.filter { fucktivity -> !fucktivity.discovered } }
+
+    override fun getUndiscoveredFuquotes(): Observable<List<Fuquote>> = allFuquotes
+        .map { it.filter { fuquote -> !fuquote.discovered } }
+
     override fun getAllFuquotes(): Observable<List<Fuquote>> = allFuquotes
 
     private fun fetchAllFucktivites(): List<Fucktivity> {
