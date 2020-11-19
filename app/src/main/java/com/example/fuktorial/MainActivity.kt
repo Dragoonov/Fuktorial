@@ -5,12 +5,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import android.widget.Toolbar
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.add
-import androidx.fragment.app.commit
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -65,7 +60,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun scheduleNotificationsIfNeeded() {
         val workRequest = PeriodicWorkRequestBuilder<NotificationWorker>(1, TimeUnit.DAYS)
-            .setInitialDelay(1, TimeUnit.DAYS)
+           // .setInitialDelay(1, TimeUnit.DAYS)
             .build()
         WorkManager
             .getInstance(this)
@@ -74,9 +69,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = Utils.NOTIFICATIONS_CHANNEL
+            val name = Utils.NOTIFICATIONS
             val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(Utils.NOTIFICATIONS_CHANNEL, name, importance)
+            val channel = NotificationChannel(Utils.NOTIFICATIONS, name, importance)
             val notificationManager: NotificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)

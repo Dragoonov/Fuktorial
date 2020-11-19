@@ -42,42 +42,50 @@ class RepositoryImpl(private val context: Context) : Repository {
     override fun insertFuquote(fuquote: Fuquote): Completable = Completable.fromAction {
             val values = ContentValues().apply {
                 put(FuktorialContract.Fuquotes.COLUMN_NAME_TEXT, fuquote.text)
-                put(FuktorialContract.Fuquotes.COLUMN_NAME_DISCOVERED, fuquote.discovered)
+                put(FuktorialContract.Fuquotes.COLUMN_NAME_DISCOVERED, if(fuquote.discovered) 1 else 0)
             }
             if (db?.insert(FuktorialContract.Fuquotes.TABLE_NAME, null, values) == -1L) {
                 throw RuntimeException("There was an error with inserting $values")
+            } else {
+                allFuquotes.onNext(fetchAllFuquotes())
             }
         }
 
     override fun updateFuquote(fuquote: Fuquote): Completable = Completable.fromAction {
         val values = ContentValues().apply {
-            put(FuktorialContract.Fuquotes.COLUMN_NAME_DISCOVERED, fuquote.discovered)
+            put(FuktorialContract.Fuquotes.COLUMN_NAME_DISCOVERED, if(fuquote.discovered) 1 else 0)
         }
-        val selection = "${FuktorialContract.Fuquotes.TABLE_NAME} LIKE ?"
+        val selection = "${FuktorialContract.Fuquotes.COLUMN_NAME_TEXT} LIKE ?"
         if (db?.update(FuktorialContract.Fuquotes.TABLE_NAME, values, selection, arrayOf(fuquote.text)) == 0) {
             throw RuntimeException("There was an error with updating $values")
+        } else {
+            allFuquotes.onNext(fetchAllFuquotes())
         }
     }
 
     override fun updateFucktivity(fucktivity: Fucktivity): Completable = Completable.fromAction {
         val values = ContentValues().apply {
-            put(FuktorialContract.Fucktivities.COLUMN_NAME_DISCOVERED, fucktivity.discovered)
-            put(FuktorialContract.Fucktivities.COLUMN_NAME_MASTERED, fucktivity.mastered)
+            put(FuktorialContract.Fucktivities.COLUMN_NAME_DISCOVERED, if (fucktivity.discovered) 1 else 0)
+            put(FuktorialContract.Fucktivities.COLUMN_NAME_MASTERED, if (fucktivity.mastered) 1 else 0)
         }
         val selection = "${FuktorialContract.Fucktivities.TABLE_NAME} LIKE ?"
         if (db?.update(FuktorialContract.Fucktivities.TABLE_NAME, values, selection, arrayOf(fucktivity.name)) == 0) {
             throw RuntimeException("There was an error with updating $values")
+        } else {
+            allFucktivities.onNext(fetchAllFucktivites())
         }
     }
 
     override fun insertFucktivity(fucktivity: Fucktivity): Completable = Completable.fromAction {
         val values = ContentValues().apply {
             put(FuktorialContract.Fucktivities.COLUMN_NAME_NAME, fucktivity.name)
-            put(FuktorialContract.Fucktivities.COLUMN_NAME_DISCOVERED, fucktivity.discovered)
-            put(FuktorialContract.Fucktivities.COLUMN_NAME_MASTERED, fucktivity.mastered)
+            put(FuktorialContract.Fucktivities.COLUMN_NAME_DISCOVERED, if (fucktivity.discovered) 1 else 0)
+            put(FuktorialContract.Fucktivities.COLUMN_NAME_MASTERED, if (fucktivity.mastered) 1 else 0)
         }
         if (db?.insert(FuktorialContract.Fucktivities.TABLE_NAME,null,  values) == -1L) {
             throw RuntimeException("There was an error with inserting $values")
+        } else {
+            allFucktivities.onNext(fetchAllFucktivites())
         }
     }
 

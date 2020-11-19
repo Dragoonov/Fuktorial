@@ -15,7 +15,7 @@ import io.reactivex.rxjava3.core.BackpressureStrategy
 import io.reactivex.rxjava3.core.Completable
 import javax.inject.Inject
 
-class MainViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
+class MainViewModel(private val repository: Repository) : ViewModel() {
 
     init {
         repository.open()
