@@ -1,18 +1,15 @@
-package com.example.fuktorial
+package com.example.fuktorial.settings
 
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
-import com.example.fuktorial.database.models.Fucktivity
-import com.example.fuktorial.notifications.NotificationWorker
-import java.util.concurrent.TimeUnit
+import com.example.fuktorial.FucktivitiesInfo
+import com.example.fuktorial.FuquotesInfo
+import com.example.fuktorial.R
+import com.example.fuktorial.getViewModel
 
 class SettingsFragment : PreferenceFragmentCompat() {
 

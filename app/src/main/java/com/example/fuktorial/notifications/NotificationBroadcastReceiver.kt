@@ -14,10 +14,10 @@ class NotificationBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         val notificationManager: NotificationManager =
             context!!.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val repository: Repository = RepositoryImpl(context)
+        val repository: Repository = RepositoryImpl
         val id = intent!!.extras!!.getInt(Utils.NOTIFICATION_ID_STRING)
         val fuquote = intent.extras?.getString(Utils.NOTIFICATIONS)!!
-        repository.open()
+        repository.open(context)
         repository.updateFuquote(Fuquote(fuquote, true))
             .subscribe()
         notificationManager.cancel(id)

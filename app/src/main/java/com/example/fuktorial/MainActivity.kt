@@ -12,11 +12,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.example.fuktorial.collection.CollectionFragment
 import com.example.fuktorial.database.Repository
 import com.example.fuktorial.database.RepositoryImpl
 import com.example.fuktorial.databinding.ActivityMainBinding
 import com.example.fuktorial.fucktivities.tutorial.TutorialEntryFragment
 import com.example.fuktorial.notifications.NotificationWorker
+import com.example.fuktorial.settings.SettingsFragment
 import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
@@ -29,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         scheduleNotificationsIfNeeded()
         viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return modelClass.getConstructor(Repository::class.java).newInstance(RepositoryImpl(this@MainActivity))
+                return modelClass.getConstructor(Repository::class.java).newInstance(RepositoryImpl)
             }
         }).get(MainViewModel::class.java)
         viewModel.apply {
@@ -47,7 +49,7 @@ class MainActivity : AppCompatActivity() {
             when (it.itemId) {
                 R.id.fucktivity -> replaceFragment(TutorialEntryFragment::class.java)
                 R.id.tasks -> Unit
-                R.id.collection -> Unit
+                R.id.collection -> replaceFragment(CollectionFragment::class.java)
                 R.id.settings -> replaceFragment(SettingsFragment::class.java)
             }
             true
@@ -60,7 +62,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun scheduleNotificationsIfNeeded() {
         val workRequest = PeriodicWorkRequestBuilder<NotificationWorker>(1, TimeUnit.DAYS)
-           // .setInitialDelay(1, TimeUnit.DAYS)
+            .setInitialDelay(1, TimeUnit.DAYS)
             .build()
         WorkManager
             .getInstance(this)

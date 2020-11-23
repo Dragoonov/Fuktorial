@@ -14,7 +14,7 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import java.lang.RuntimeException
 import java.util.concurrent.Executors
 
-class RepositoryImpl(private val context: Context) : Repository {
+object RepositoryImpl : Repository {
     private var db: SQLiteDatabase? = null
 
     private val allFucktivities: BehaviorSubject<List<Fucktivity>> = BehaviorSubject.create()
@@ -22,7 +22,7 @@ class RepositoryImpl(private val context: Context) : Repository {
 
     private val executorService = Executors.newSingleThreadExecutor()
 
-    override fun open() {
+    override fun open(context: Context) {
         if (db == null) {
             db = FuktorialDbHelper(context).writableDatabase
             executorService.execute {

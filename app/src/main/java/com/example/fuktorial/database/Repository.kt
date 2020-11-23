@@ -1,12 +1,13 @@
 package com.example.fuktorial.database
 
+import android.content.Context
 import com.example.fuktorial.database.models.Fucktivity
 import com.example.fuktorial.database.models.Fuquote
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Observable
 
 interface Repository {
-    fun open()
+    fun open(context: Context)
     fun close()
     fun insertFuquote(fuquote: Fuquote): Completable
     fun updateFuquote(fuquote: Fuquote): Completable

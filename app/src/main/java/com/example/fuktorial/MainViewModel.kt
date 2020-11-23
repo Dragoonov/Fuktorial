@@ -17,10 +17,6 @@ import javax.inject.Inject
 
 class MainViewModel(private val repository: Repository) : ViewModel() {
 
-    init {
-        repository.open()
-    }
-
     private var _notificationsEnabled: MutableLiveData<Boolean> = MutableLiveData()
     val notificationsEnabled: LiveData<Boolean> = _notificationsEnabled
 
@@ -44,6 +40,7 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
     )
 
     fun initialize(context: Context) {
+        repository.open(context)
         val notificationsTurnedOn = (context as Activity).getPreferences(MODE_PRIVATE).getBoolean("notifications", true)
         _notificationsEnabled.value = notificationsTurnedOn
     }
