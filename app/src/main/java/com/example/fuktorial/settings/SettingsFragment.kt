@@ -21,7 +21,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        activity?.getViewModel()!!.apply {
+        getViewModel().apply {
             discoveredFucktivities.observe(viewLifecycleOwner, Observer {
                 discoveredFucktivitiesSize = it.size
                 updateFucktivitesSummary()
