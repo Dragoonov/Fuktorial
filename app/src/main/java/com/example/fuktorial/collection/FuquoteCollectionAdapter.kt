@@ -9,13 +9,9 @@ import com.example.fuktorial.databinding.FuquoteElementBinding
 class FuquoteCollectionAdapter(private var dataSet: List<Fuquote>) :
     RecyclerView.Adapter<FuquoteCollectionAdapter.ViewHolder>() {
 
-    /**
-     * Provide a reference to the type of views that you are using
-     * (custom ViewHolder).
-     */
      inner class ViewHolder(private val binding: FuquoteElementBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(fuquote: Fuquote) {
-            binding.text.text = fuquote.text
+            binding.fuquote = fuquote
         }
     }
 

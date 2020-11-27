@@ -5,17 +5,23 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.lifecycle.ViewModelProvider
 import com.example.fuktorial.R
 import com.example.fuktorial.databinding.ActivityTutorialLevelBinding
-import com.example.fuktorial.startFucktivity
 
 class TutorialLevelActivity: AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
         super.onCreate(savedInstanceState, persistentState)
+        val viewModel = ViewModelProvider(this)[TutorialViewModel::class.java]
         val binding = ActivityTutorialLevelBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.button.setOnClickListener {
+            viewModel.numberOfClicks += 1
+            if (viewModel.numberOfClicks > 10) {
+                showFinishDialog()
+            }
+        }
         showExplanationDialog()
     }
 
@@ -26,5 +32,9 @@ class TutorialLevelActivity: AppCompatActivity() {
             .setPositiveButton(R.string.ok) { _: DialogInterface, _: Int -> }
             .create()
             .show()
+
+    private fun showFinishDialog() {
+
+    }
 
 }

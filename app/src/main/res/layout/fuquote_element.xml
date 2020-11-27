@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
+        <variable
+            name="fuquote"
+            type="com.example.fuktorial.database.models.Fuquote" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -31,6 +33,7 @@
                 android:layout_marginEnd="32dp"
                 android:fontFamily="cursive"
                 android:gravity="center"
+                android:text="@{fuquote.text}"
                 android:textColor="#000000"
                 android:textSize="24sp"
                 android:layout_marginLeft="32dp" />
