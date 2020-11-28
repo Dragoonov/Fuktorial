@@ -23,7 +23,7 @@ object RepositoryImpl : Repository {
     private val executorService = Executors.newSingleThreadExecutor()
 
     override fun open(context: Context) {
-        if (db == null) {
+        if (db == null || !(db as SQLiteDatabase).isOpen) {
             db = FuktorialDbHelper(context).writableDatabase
             executorService.execute {
                 allFucktivities.onNext(fetchAllFucktivites())
@@ -33,7 +33,9 @@ object RepositoryImpl : Repository {
     }
 
     override fun close() {
-        db?.close()!!
+        if(db != null && (db as SQLiteDatabase).isOpen) {
+            db?.close()
+        }
         if (!executorService.isShutdown) {
             executorService.shutdown()
         }
@@ -68,7 +70,7 @@ object RepositoryImpl : Repository {
             put(FuktorialContract.Fucktivities.COLUMN_NAME_DISCOVERED, if (fucktivity.discovered) 1 else 0)
             put(FuktorialContract.Fucktivities.COLUMN_NAME_MASTERED, if (fucktivity.mastered) 1 else 0)
         }
-        val selection = "${FuktorialContract.Fucktivities.TABLE_NAME} LIKE ?"
+        val selection = "${FuktorialContract.Fucktivities.COLUMN_NAME_NAME} LIKE ?"
         if (db?.update(FuktorialContract.Fucktivities.TABLE_NAME, values, selection, arrayOf(fucktivity.name)) == 0) {
             throw RuntimeException("There was an error with updating $values")
         } else {

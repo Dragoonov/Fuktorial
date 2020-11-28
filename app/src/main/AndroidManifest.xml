@@ -20,7 +20,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".fucktivities.tutorial.TutorialLevelActivity" />
+        <activity android:name=".fucktivities.tutorial.TutorialLevelFucktivity" />
         <receiver android:name=".notifications.NotificationBroadcastReceiver" />
     </application>
 

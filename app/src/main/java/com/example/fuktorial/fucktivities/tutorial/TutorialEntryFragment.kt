@@ -38,7 +38,7 @@ class TutorialEntryFragment : Fragment() {
             .setTitle(R.string.congratulations)
             .setMessage(R.string.tutorialMessage1)
             .setPositiveButton(R.string.ok) { _: DialogInterface, _: Int ->
-                startFucktivity(TutorialLevelActivity::class.java)
+                startFucktivity(TutorialLevelFucktivity::class.java)
             }
             .create()
             .show()

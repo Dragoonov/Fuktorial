@@ -1,18 +1,19 @@
 package com.example.fuktorial
 
 import android.app.Activity
-import com.example.fuktorial.fucktivities.tutorial.TutorialLevelActivity
+import androidx.fragment.app.Fragment
+import com.example.fuktorial.fucktivities.tutorial.TutorialLevelFucktivity
 
 object FucktivitiesInfo {
     val fucktivitiesList = listOf(
-        TutorialLevelActivity::class.java
+        TutorialLevelFucktivity::class.java
     )
 
     fun getFucktivityLevelClass(name: String) = fucktivitiesList.find {
-        it.simpleName == name + "LevelActivity"
+        it.simpleName == name + "LevelFucktivity"
     }
 
     fun <T : Activity> getFucktivityName(fucktivityClass : Class<T>) = fucktivityClass
         .simpleName
-        .removeSuffix("LevelActivity")
+        .removeSuffix("LevelFucktivity")
 }

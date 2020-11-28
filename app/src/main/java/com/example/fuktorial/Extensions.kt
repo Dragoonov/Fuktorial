@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.ContentValues
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
+import android.os.Bundle
 import android.provider.BaseColumns
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -17,13 +18,13 @@ import com.example.fuktorial.database.FuktorialContract
 import com.example.fuktorial.notifications.NotificationWorker
 import java.util.concurrent.TimeUnit
 
-fun<T : Fragment> FragmentActivity.replaceFragment(fragmentClass: Class<T>) {
+fun<T : Fragment> FragmentActivity.replaceFragment(fragmentClass: Class<T>, args: Bundle? = null) {
     val tag = "Current Fragment"
     supportFragmentManager.commit {
         if (supportFragmentManager.backStackEntryCount == 0) {
-            add(R.id.fragment_container, fragmentClass, null, tag)
+            add(R.id.fragment_container, fragmentClass, args, tag)
         } else {
-            replace(R.id.fragment_container, fragmentClass, null, tag)
+            replace(R.id.fragment_container, fragmentClass, args, tag)
         }
         addToBackStack(null)
     }

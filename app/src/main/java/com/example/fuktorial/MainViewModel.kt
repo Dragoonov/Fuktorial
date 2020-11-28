@@ -35,6 +35,10 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
         repository.getDiscoveredFuquotes().toFlowable(BackpressureStrategy.BUFFER)
     )
 
+    val undiscoveredFucktivities: LiveData<List<Fucktivity>> = LiveDataReactiveStreams.fromPublisher(
+        repository.getUndicoveredFucktivities().toFlowable(BackpressureStrategy.BUFFER)
+    )
+
     val allFuquotes: LiveData<List<Fuquote>> = LiveDataReactiveStreams.fromPublisher(
         repository.getAllFuquotes().toFlowable(BackpressureStrategy.BUFFER)
     )
@@ -47,20 +51,16 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
 
     fun enableNotifications(value: Boolean) = run {_notificationsEnabled.value = value}
 
-    fun discoverFuquote(fuquote: Fuquote): Completable {
-        fuquote.discovered = true
-        return repository.updateFuquote(fuquote)
-    }
-    fun discoverFucktivity(fucktivity: Fucktivity): Completable {
-        fucktivity.discovered = true
-        return repository.updateFucktivity(fucktivity)
-    }
+    fun discoverFuquote(fuquoteName: String): Completable =
+        repository.updateFuquote(Fuquote(fuquoteName, true))
 
-    fun masterFucktivity(fucktivity: Fucktivity): Completable {
-        fucktivity.discovered = true
-        fucktivity.mastered = true
-        return repository.updateFucktivity(fucktivity)
-    }
+    fun discoverFucktivity(fucktivityName: String): Completable =
+        repository.updateFucktivity(Fucktivity(fucktivityName, discovered = true, mastered = false))
+
+
+    fun masterFucktivity(fucktivityName: String): Completable =
+        repository.updateFucktivity(Fucktivity(fucktivityName, true, mastered = true))
+
 
     fun resetProgress(): Completable = repository.resetProgress()
 
