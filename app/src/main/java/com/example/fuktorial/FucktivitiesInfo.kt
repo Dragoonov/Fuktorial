@@ -2,11 +2,16 @@ package com.example.fuktorial
 
 import android.app.Activity
 import androidx.fragment.app.Fragment
+import com.example.fuktorial.fucktivities.tutorial.TutorialEntryFragment
 import com.example.fuktorial.fucktivities.tutorial.TutorialLevelFucktivity
 
 object FucktivitiesInfo {
     val fucktivitiesList = listOf(
         TutorialLevelFucktivity::class.java
+    )
+
+    val entriesList = listOf(
+        TutorialEntryFragment::class.java
     )
 
     fun getFucktivityLevelClass(name: String) = fucktivitiesList.find {
@@ -16,4 +21,9 @@ object FucktivitiesInfo {
     fun <T : Activity> getFucktivityName(fucktivityClass : Class<T>) = fucktivityClass
         .simpleName
         .removeSuffix("LevelFucktivity")
+
+    fun getEntryByName(fucktivityName: String) = entriesList.find {
+        it.name.contains(fucktivityName)
+    }
+
 }

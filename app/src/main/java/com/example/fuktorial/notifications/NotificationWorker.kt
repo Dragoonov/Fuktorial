@@ -9,7 +9,7 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.example.fuktorial.FuquotesInfo
 import com.example.fuktorial.R
-import com.example.fuktorial.Utils
+import com.example.fuktorial.Constants
 import kotlin.random.Random
 
 class NotificationWorker(
@@ -20,12 +20,12 @@ class NotificationWorker(
     override fun doWork(): Result {
         val fuquote = FuquotesInfo.fuquotesList[Random(System.currentTimeMillis()).nextInt(FuquotesInfo.fuquotesList.size)]
         val intent = Intent(applicationContext, NotificationBroadcastReceiver::class.java).apply {
-            putExtra(Utils.NOTIFICATIONS, fuquote)
-            putExtra(Utils.NOTIFICATION_ID_STRING, Utils.NOTIFICATION_ID)
+            putExtra(Constants.NOTIFICATIONS, fuquote)
+            putExtra(Constants.NOTIFICATION_ID_STRING, Constants.NOTIFICATION_ID)
         }
         val pendingIntent: PendingIntent =
             PendingIntent.getBroadcast(applicationContext, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT)
-        val notification = NotificationCompat.Builder(applicationContext, Utils.NOTIFICATIONS)
+        val notification = NotificationCompat.Builder(applicationContext, Constants.NOTIFICATIONS)
             .setSmallIcon(R.drawable.fucktivity)
             .setContentTitle("\"" + applicationContext.getString(R.string.claim_fuquote) +"\"")
             .setContentText(fuquote)
@@ -37,7 +37,7 @@ class NotificationWorker(
             .addAction(R.drawable.collection, applicationContext.getString(R.string.claim), pendingIntent)
             .build()
         with(NotificationManagerCompat.from(applicationContext)) {
-            notify(Utils.NOTIFICATION_ID, notification)
+            notify(Constants.NOTIFICATION_ID, notification)
         }
         return Result.success()
     }

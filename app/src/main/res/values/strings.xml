@@ -32,5 +32,6 @@
     <string name="replay">Replay</string>
     <string name="click_me">Click me</string>
     <string name="fucktivity_mastered">Fucktivity mastered!</string>
+    <string name="all_complete">You completed all available Fucktivities!</string>
 
 </resources>

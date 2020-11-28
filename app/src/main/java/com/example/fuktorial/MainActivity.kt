@@ -6,7 +6,6 @@ import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -50,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         if (savedInstanceState == null) {
-            replaceFragment(TutorialEntryFragment::class.java)
+            findAppropriateFragment()
         }
         binding.bottomNavigationView.setOnNavigationItemSelectedListener {
             when (it.itemId) {
@@ -78,9 +77,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = Utils.NOTIFICATIONS
+            val name = Constants.NOTIFICATIONS
             val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(Utils.NOTIFICATIONS, name, importance)
+            val channel = NotificationChannel(Constants.NOTIFICATIONS, name, importance)
             val notificationManager: NotificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
@@ -89,7 +88,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun findAppropriateFragment() {
         if (notDiscoveredFucktivities.isEmpty()) {
-            //replaceFragment()
+            replaceFragment(
+                NoFucktivityFragment::class.java,
+                Bundle().apply {
+                    putString(Constants.NO_FUCKTIVITY_KEY, getString(R.string.all_complete))
+                })
+        } else {
+            replaceFragment(FucktivitiesInfo.getEntryByName(notDiscoveredFucktivities.random().name)!!)
         }
     }
 }
