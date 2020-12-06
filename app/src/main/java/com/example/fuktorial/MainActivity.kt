@@ -20,6 +20,7 @@ import com.example.fuktorial.databinding.ActivityMainBinding
 import com.example.fuktorial.fucktivities.tutorial.TutorialEntryFragment
 import com.example.fuktorial.notifications.NotificationWorker
 import com.example.fuktorial.settings.SettingsFragment
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
@@ -27,6 +28,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var viewModel: MainViewModel
 
     private var notDiscoveredFucktivities: List<Fucktivity> = listOf()
+
+    private lateinit var lastDiscovery: Date
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,12 +48,17 @@ class MainActivity : AppCompatActivity() {
             undiscoveredFucktivities.observe(this@MainActivity, Observer {
                 notDiscoveredFucktivities = it.toMutableList()
             })
+            lastFucktivityDiscovery.observe(this@MainActivity, Observer {
+                it?.let {
+                    lastDiscovery = Date(it.time)
+                    if (savedInstanceState == null) {
+                        findAppropriateFragment()
+                    }
+                }
+            })
         }
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        if (savedInstanceState == null) {
-            findAppropriateFragment()
-        }
         binding.bottomNavigationView.setOnNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.fucktivity -> findAppropriateFragment()
@@ -86,13 +94,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun findAppropriateFragment() {
-        if (notDiscoveredFucktivities.isEmpty()) {
-            replaceFragment(
-                NoFucktivityFragment::class.java,
-                Bundle().apply {
-                    putString(Constants.NO_FUCKTIVITY_KEY, getString(R.string.all_complete))
-                })
+    fun findAppropriateFragment() {
+        if (notDiscoveredFucktivities.isEmpty() || System.currentTimeMillis() - lastDiscovery.time < 1000 * 60 * 60 * 5) { //5 hours not passed
+            replaceFragment(NoFucktivityFragment::class.java,
+            Bundle().apply {
+                 putLong(Constants.LAST_DISCOVERY, lastDiscovery.time)
+             })
         } else {
             replaceFragment(FucktivitiesInfo.getEntryByName(notDiscoveredFucktivities.random().name)!!)
         }

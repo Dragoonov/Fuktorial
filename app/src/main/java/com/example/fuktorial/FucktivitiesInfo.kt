@@ -18,9 +18,10 @@ object FucktivitiesInfo {
         it.simpleName == name + "LevelFucktivity"
     }
 
-    fun <T : Activity> getFucktivityName(fucktivityClass : Class<T>) = fucktivityClass
+    fun <T : Any> getFucktivityName(fucktivityClass : Class<T>) = fucktivityClass
         .simpleName
-        .removeSuffix("LevelFucktivity")
+        .removeSuffix(if (fucktivityClass::class.java.isAssignableFrom(Activity::class.java) ) "LevelFucktivity" else "EntryFragment")
+
 
     fun getEntryByName(fucktivityName: String) = entriesList.find {
         it.name.contains(fucktivityName)

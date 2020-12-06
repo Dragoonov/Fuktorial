@@ -6,17 +6,10 @@ import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.provider.BaseColumns
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.commit
-import androidx.preference.Preference
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
 import com.example.fuktorial.database.FuktorialContract
-import com.example.fuktorial.notifications.NotificationWorker
-import java.util.concurrent.TimeUnit
 
 fun<T : Fragment> FragmentActivity.replaceFragment(fragmentClass: Class<T>, args: Bundle? = null) {
     val tag = "Current Fragment"
@@ -85,7 +78,5 @@ fun SQLiteDatabase.resetProgress() {
     clearDatabase()
     createAndInitialize()
 }
-
-fun Activity.getViewModel() = (this as MainActivity).viewModel
 
 fun Fragment.getViewModel() = (activity as MainActivity).viewModel

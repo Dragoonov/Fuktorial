@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.fuktorial.FucktivitiesInfo
-import com.example.fuktorial.MainViewModel
 import com.example.fuktorial.R
 import com.example.fuktorial.database.Repository
 import com.example.fuktorial.database.RepositoryImpl

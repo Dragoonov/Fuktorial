@@ -7,12 +7,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.LiveDataReactiveStreams
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.preference.PreferenceManager
 import com.example.fuktorial.database.Repository
 import com.example.fuktorial.database.models.Fucktivity
 import com.example.fuktorial.database.models.Fuquote
 import com.example.fuktorial.notifications.NotificationWorker
 import io.reactivex.rxjava3.core.BackpressureStrategy
 import io.reactivex.rxjava3.core.Completable
+import java.util.*
 import javax.inject.Inject
 
 class MainViewModel(private val repository: Repository) : ViewModel() {
@@ -43,10 +45,16 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
         repository.getAllFuquotes().toFlowable(BackpressureStrategy.BUFFER)
     )
 
+    private val _lastFucktivityDiscovery: MutableLiveData<Date?> = MutableLiveData(null)
+    val lastFucktivityDiscovery: LiveData<Date?> get() =  _lastFucktivityDiscovery
+
+
     fun initialize(context: Context) {
+        val preferences = PreferenceManager.getDefaultSharedPreferences(context)
         repository.open(context)
-        val notificationsTurnedOn = (context as Activity).getPreferences(MODE_PRIVATE).getBoolean("notifications", true)
+        val notificationsTurnedOn = preferences.getBoolean(Constants.NOTIFICATIONS, true)
         _notificationsEnabled.value = notificationsTurnedOn
+        _lastFucktivityDiscovery.value = Date(preferences.getLong(Constants.LAST_DISCOVERY, 0L))
     }
 
     fun enableNotifications(value: Boolean) = run {_notificationsEnabled.value = value}
@@ -54,9 +62,16 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
     fun discoverFuquote(fuquoteName: String): Completable =
         repository.updateFuquote(Fuquote(fuquoteName, true))
 
-    fun discoverFucktivity(fucktivityName: String): Completable =
-        repository.updateFucktivity(Fucktivity(fucktivityName, discovered = true, mastered = false))
-
+    fun discoverFucktivity(fucktivityName: String, context: Context): Completable {
+        val date = System.currentTimeMillis()
+        PreferenceManager
+            .getDefaultSharedPreferences(context)
+            .edit()
+            .putLong(Constants.LAST_DISCOVERY, date)
+            .apply()
+        _lastFucktivityDiscovery.value = Date(date)
+        return repository.updateFucktivity(Fucktivity(fucktivityName, discovered = true, mastered = false))
+    }
 
     fun masterFucktivity(fucktivityName: String): Completable =
         repository.updateFucktivity(Fucktivity(fucktivityName, true, mastered = true))
