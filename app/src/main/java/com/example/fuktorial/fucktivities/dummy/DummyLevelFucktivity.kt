@@ -34,7 +34,7 @@ class DummyLevelFucktivity : AppCompatActivity() {
 
     private fun showFinishDialog() =
         AlertDialog.Builder(this)
-            .setTitle(FucktivitiesInfo.getFucktivityName(TutorialLevelFucktivity::class.java))
+            .setTitle(FucktivitiesInfo.getFucktivityName(DummyLevelFucktivity::class.java))
             .setView(R.layout.fucktivity_mastered)
             .setPositiveButton(R.string.ok) { _: DialogInterface, _: Int ->
                 finish()

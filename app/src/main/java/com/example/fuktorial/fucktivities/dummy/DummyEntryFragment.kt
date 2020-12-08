@@ -30,7 +30,7 @@ class DummyEntryFragment : Fragment() {
             .setTitle(R.string.congratulations)
             .setMessage(R.string.tutorialMessage1)
             .setPositiveButton(R.string.ok) { _: DialogInterface, _: Int ->
-                startFucktivity(TutorialLevelFucktivity::class.java)
+                startFucktivity(DummyLevelFucktivity::class.java)
             }
             .create()
             .show()
