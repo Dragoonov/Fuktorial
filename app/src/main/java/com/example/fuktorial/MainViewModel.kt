@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.LiveDataReactiveStreams
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.preference.PreferenceManager
@@ -53,7 +54,7 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
         val preferences = PreferenceManager.getDefaultSharedPreferences(context)
         repository.open(context)
         val notificationsTurnedOn = preferences.getBoolean(Constants.NOTIFICATIONS, true)
-        _notificationsEnabled.value = notificationsTurnedOn
+        enableNotifications(notificationsTurnedOn)
         _lastFucktivityDiscovery.value = Date(preferences.getLong(Constants.LAST_DISCOVERY, 0L))
     }
 
