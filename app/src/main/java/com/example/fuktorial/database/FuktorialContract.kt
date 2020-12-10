@@ -15,4 +15,8 @@ object FuktorialContract {
         const val COLUMN_NAME_DISCOVERED = "discovered"
         const val COLUMN_NAME_MASTERED = "mastered"
     }
+    object LastDiscoveryTime: BaseColumns {
+        const val TABLE_NAME = "last_discovery"
+        const val COLUMN_NAME_TIME = "time"
+    }
 }

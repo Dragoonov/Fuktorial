@@ -5,6 +5,7 @@ import com.example.fuktorial.database.models.Fucktivity
 import com.example.fuktorial.database.models.Fuquote
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Observable
+import java.util.*
 
 interface Repository {
     fun open(context: Context)
@@ -21,4 +22,6 @@ interface Repository {
     fun getAllFuquotes(): Observable<List<Fuquote>>
     fun getUndicoveredFucktivities(): Observable<List<Fucktivity>>
     fun getUndiscoveredFuquotes(): Observable<List<Fuquote>>
+    fun getLastDiscovery(): Observable<Date>
+    fun updateLastDiscovery(date: Date): Completable
 }

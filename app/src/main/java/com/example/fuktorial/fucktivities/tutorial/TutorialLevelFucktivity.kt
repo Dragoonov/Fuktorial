@@ -11,8 +11,12 @@ import com.example.fuktorial.R
 import com.example.fuktorial.database.Repository
 import com.example.fuktorial.database.RepositoryImpl
 import com.example.fuktorial.databinding.FucktivityTutorialLevelBinding
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+
 
 class TutorialLevelFucktivity : AppCompatActivity() {
+
+    private val disposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,10 +31,12 @@ class TutorialLevelFucktivity : AppCompatActivity() {
         binding.button.setOnClickListener {
             viewModel.numberOfClicks += 1
             if (viewModel.numberOfClicks > 10) {
+                disposable.add(
                 viewModel.masterFucktivity(FucktivitiesInfo.getFucktivityName(this::class.java))
                     .subscribe {
                         showFinishDialog()
                     }
+                )
             }
         }
         showExplanationDialog()
@@ -53,4 +59,9 @@ class TutorialLevelFucktivity : AppCompatActivity() {
             }
             .create()
             .show()
+
+    override fun onDestroy() {
+        disposable.dispose()
+        super.onDestroy()
+    }
 }

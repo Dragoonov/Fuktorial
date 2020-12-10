@@ -5,6 +5,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.Observer
@@ -27,10 +28,6 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var viewModel: MainViewModel
 
-    private var notDiscoveredFucktivities: List<Fucktivity>? = null
-
-    private var lastDiscovery: Date? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         createNotificationChannel()
@@ -44,21 +41,20 @@ class MainActivity : AppCompatActivity() {
             notificationsEnabled.observe(this@MainActivity, Observer {
                 if (it) scheduleNotifications() else cancelNotifications()
             })
-            undiscoveredFucktivities.observe(this@MainActivity, Observer {
-                notDiscoveredFucktivities = it.toMutableList()
-                findAppropriateFragment()
-            })
-            lastFucktivityDiscovery.observe(this@MainActivity, Observer {
-                it?.let {
-                    lastDiscovery = Date(it.time)
+            dataLoaded.observe(this@MainActivity, Observer {
+                if (it) {
+                    replaceFragment(findAppropriateFragment()!!)
                 }
             })
+            resetProgress().subscribe {
+                Log.d("dd", "Usuniete")
+            }
         }
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.bottomNavigationView.setOnNavigationItemSelectedListener {
             when (it.itemId) {
-                R.id.fucktivity -> findAppropriateFragment()
+                R.id.fucktivity -> replaceFragment(viewModel.findAppropriateFragment()!!)
                 R.id.tasks -> Unit
                 R.id.collection -> replaceFragment(CollectionFragment::class.java)
                 R.id.settings -> replaceFragment(SettingsFragment::class.java)
@@ -67,9 +63,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun cancelNotifications() {
-        WorkManager.getInstance(this).cancelUniqueWork(NotificationWorker.WORK_NAME)
-    }
+    private fun cancelNotifications() =WorkManager.getInstance(this).cancelUniqueWork(NotificationWorker.WORK_NAME)
 
     private fun scheduleNotifications() {
         val workRequest = PeriodicWorkRequestBuilder<NotificationWorker>(1, TimeUnit.DAYS)
@@ -88,17 +82,6 @@ class MainActivity : AppCompatActivity() {
             val notificationManager: NotificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
-        }
-    }
-
-    fun findAppropriateFragment() {
-        if (notDiscoveredFucktivities!!.isEmpty() || System.currentTimeMillis() - lastDiscovery!!.time < 1000 * 60 * 60 * 5) { //5 hours not passed
-            replaceFragment(NoFucktivityFragment::class.java,
-            Bundle().apply {
-                 putLong(Constants.LAST_DISCOVERY, lastDiscovery!!.time)
-             })
-        } else {
-            replaceFragment(FucktivitiesInfo.getEntryByName(notDiscoveredFucktivities!!.random().name)!!)
         }
     }
 }

@@ -18,9 +18,10 @@ class NoFucktivityFragment: Fragment() {
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val lastDiscovery = arguments?.getLong(Constants.LAST_DISCOVERY) ?: 0
+        val lastFucktivityDiscovery = getViewModel().lastFucktivityDiscovery.value!!
+        val lastDiscovery = lastFucktivityDiscovery
         val binding = NoFucktivityFragmentBinding.inflate(layoutInflater, container, false)
-        if (System.currentTimeMillis() - lastDiscovery > 1000 * 60 * 60 * 5) { // 5 hours passed
+        if (System.currentTimeMillis() - lastDiscovery.time > 1000 * 60 * 60 * 5) { // 5 hours passed
             binding.text.text = getString(R.string.all_complete)
         } else {
             var seconds = 0
@@ -31,11 +32,11 @@ class NoFucktivityFragment: Fragment() {
             val handler = Handler(handlerThread.looper)
             handler.post {
                 while (true) {
-                    val time = System.currentTimeMillis() - lastDiscovery
+                    val time = System.currentTimeMillis() - lastDiscovery.time
                     if (time <= 1000 * 60 * 60 * 5) {
-                        hours = time.div(1000*60*60).toInt()
-                        minutes = (time.div(1000*60)%60).toInt()
-                        seconds = (time.div(60)%60).toInt()
+                        hours = 4 - time.div(1000*60*60).toInt()
+                        minutes = 59 - (time.div(1000*60)%60).toInt()
+                        seconds = 60 - (time.div(1000)%60).toInt()
                         if (previousSeconds != seconds) {
                             previousSeconds = seconds
                             uiHandler.post {

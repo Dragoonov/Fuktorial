@@ -11,8 +11,9 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.commit
 import com.example.fuktorial.database.FuktorialContract
 
-fun<T : Fragment> FragmentActivity.replaceFragment(fragmentClass: Class<T>, args: Bundle? = null) {
+fun <T : Fragment> FragmentActivity.replaceFragment(fragmentClass: Class<T>, args: Bundle? = null) {
     val tag = "Current Fragment"
+
     supportFragmentManager.commit {
         if (supportFragmentManager.backStackEntryCount == 0) {
             add(R.id.fragment_container, fragmentClass, args, tag)
@@ -32,8 +33,10 @@ fun SQLiteDatabase.clearDatabase() {
     val sqlDeleteFuquotes = "DROP TABLE IF EXISTS ${FuktorialContract.Fuquotes.TABLE_NAME}"
     val sqlDeleteFucktivities =
         "DROP TABLE IF EXISTS ${FuktorialContract.Fucktivities.TABLE_NAME}"
+    val sqlDeleteLastDIscovery = "DROP TABLE IF EXISTS ${FuktorialContract.LastDiscoveryTime.TABLE_NAME}"
     execSQL(sqlDeleteFucktivities)
     execSQL(sqlDeleteFuquotes)
+    execSQL(sqlDeleteLastDIscovery)
 }
 
 fun SQLiteDatabase.createAndInitialize() {
@@ -50,8 +53,14 @@ fun SQLiteDatabase.createAndInitialize() {
                 "${FuktorialContract.Fucktivities.COLUMN_NAME_DISCOVERED} INTEGER," +
                 "${FuktorialContract.Fucktivities.COLUMN_NAME_MASTERED} INTEGER)"
 
+    val sqlCreateLastDiscovery =
+        "CREATE TABLE ${FuktorialContract.LastDiscoveryTime.TABLE_NAME} (" +
+                "${BaseColumns._ID} INTEGER PRIMARY KEY," +
+                "${FuktorialContract.LastDiscoveryTime.COLUMN_NAME_TIME} TEXT)"
+
     execSQL(sqlCreateFuquotes)
     execSQL(sqlCreateFucktivities)
+    execSQL(sqlCreateLastDiscovery)
     FuquotesInfo.fuquotesList.forEach {
         insert(
             FuktorialContract.Fuquotes.TABLE_NAME,
@@ -66,12 +75,23 @@ fun SQLiteDatabase.createAndInitialize() {
             FuktorialContract.Fucktivities.TABLE_NAME,
             null,
             ContentValues().apply {
-                put(FuktorialContract.Fucktivities.COLUMN_NAME_NAME,
-                    FucktivitiesInfo.getFucktivityName(it))
+                put(
+                    FuktorialContract.Fucktivities.COLUMN_NAME_NAME,
+                    FucktivitiesInfo.getFucktivityName(it)
+                )
                 put(FuktorialContract.Fucktivities.COLUMN_NAME_DISCOVERED, 0)
                 put(FuktorialContract.Fucktivities.COLUMN_NAME_MASTERED, 0)
             })
     }
+    insert(
+        FuktorialContract.LastDiscoveryTime.TABLE_NAME,
+        null,
+        ContentValues().apply {
+            put(
+                FuktorialContract.LastDiscoveryTime.COLUMN_NAME_TIME,
+                "0"
+            )
+        })
 }
 
 fun SQLiteDatabase.resetProgress() {

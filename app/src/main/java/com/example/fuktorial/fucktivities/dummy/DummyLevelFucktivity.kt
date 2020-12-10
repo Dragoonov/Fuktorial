@@ -13,8 +13,11 @@ import com.example.fuktorial.database.RepositoryImpl
 import com.example.fuktorial.databinding.DummyLevelFucktivityBinding
 import com.example.fuktorial.fucktivities.tutorial.TutorialLevelFucktivity
 import com.example.fuktorial.fucktivities.tutorial.TutorialViewModel
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class DummyLevelFucktivity : AppCompatActivity() {
+
+    private val disposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,10 +29,11 @@ class DummyLevelFucktivity : AppCompatActivity() {
         }).get(TutorialViewModel::class.java)
         viewModel.initialize(this)
         setContentView(binding.root)
-        viewModel.masterFucktivity(FucktivitiesInfo.getFucktivityName(this::class.java))
+        disposable.add(viewModel.masterFucktivity(FucktivitiesInfo.getFucktivityName(this::class.java))
             .subscribe {
                 showFinishDialog()
             }
+        )
     }
 
     private fun showFinishDialog() =
@@ -41,4 +45,9 @@ class DummyLevelFucktivity : AppCompatActivity() {
             }
             .create()
             .show()
+
+    override fun onDestroy() {
+        disposable.dispose()
+        super.onDestroy()
+    }
 }

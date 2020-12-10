@@ -12,6 +12,7 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import java.lang.RuntimeException
+import java.util.*
 import java.util.concurrent.Executors
 
 object RepositoryImpl : Repository {
@@ -19,6 +20,7 @@ object RepositoryImpl : Repository {
 
     private val allFucktivities: BehaviorSubject<List<Fucktivity>> = BehaviorSubject.create()
     private val allFuquotes: BehaviorSubject<List<Fuquote>> = BehaviorSubject.create()
+    private val lastDiscovery: BehaviorSubject<Date> = BehaviorSubject.create()
 
     private val executorService = Executors.newSingleThreadExecutor()
 
@@ -28,6 +30,7 @@ object RepositoryImpl : Repository {
             executorService.execute {
                 allFucktivities.onNext(fetchAllFucktivites())
                 allFuquotes.onNext(fetchAllFuquotes())
+                lastDiscovery.onNext(fetchLastDiscovery())
             }
         }
     }
@@ -112,6 +115,41 @@ object RepositoryImpl : Repository {
 
     override fun getUndiscoveredFuquotes(): Observable<List<Fuquote>> = allFuquotes
         .map { it.filter { fuquote -> !fuquote.discovered } }
+
+    override fun getLastDiscovery(): Observable<Date> = lastDiscovery
+
+    private fun fetchLastDiscovery(): Date {
+        val projection = arrayOf(
+            FuktorialContract.LastDiscoveryTime.COLUMN_NAME_TIME)
+
+        val cursor = db!!.query(
+            FuktorialContract.LastDiscoveryTime.TABLE_NAME,   // The table to query
+            projection,
+            null,
+            null,
+            null,
+            null,
+            null
+        )
+        var time: Long
+        with(cursor) {
+            moveToNext()
+            time = getString(getColumnIndexOrThrow(FuktorialContract.LastDiscoveryTime.COLUMN_NAME_TIME)).toLong()
+        }
+        cursor.close()
+        return Date(time)
+    }
+
+    override fun updateLastDiscovery(date: Date): Completable = Completable.fromAction {
+        val values = ContentValues().apply {
+            put(FuktorialContract.LastDiscoveryTime.COLUMN_NAME_TIME, date.time.toString())
+        }
+        if (db?.update(FuktorialContract.LastDiscoveryTime.TABLE_NAME, values, null, null) == 0) {
+            throw RuntimeException("There was an error with updating $values")
+        } else {
+            lastDiscovery.onNext(date)
+        }
+    }
 
     override fun getAllFuquotes(): Observable<List<Fuquote>> = allFuquotes
 

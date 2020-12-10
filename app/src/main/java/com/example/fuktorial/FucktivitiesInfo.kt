@@ -15,7 +15,8 @@ object FucktivitiesInfo {
 
     val entriesList = listOf(
         TutorialEntryFragment::class.java,
-        DummyEntryFragment::class.java
+        DummyEntryFragment::class.java,
+        NoFucktivityFragment::class.java
     )
 
     fun getFucktivityLevelClass(name: String) = fucktivitiesList.find {
