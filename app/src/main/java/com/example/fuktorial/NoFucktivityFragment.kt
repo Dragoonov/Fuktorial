@@ -9,19 +9,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.fuktorial.databinding.NoFucktivityFragmentBinding
-import java.util.*
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 
-class NoFucktivityFragment: Fragment() {
+class NoFucktivityFragment : Fragment() {
 
     private val handlerThread = HandlerThread("Updater")
     private val uiHandler = Handler(Looper.getMainLooper())
-
+    private val disposable = CompositeDisposable()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val lastFucktivityDiscovery = getViewModel().lastFucktivityDiscovery.value!!
-        val lastDiscovery = lastFucktivityDiscovery
         val binding = NoFucktivityFragmentBinding.inflate(layoutInflater, container, false)
-        if (System.currentTimeMillis() - lastDiscovery.time > 1000 * 60 * 60 * 5) { // 5 hours passed
+        if (System.currentTimeMillis() - lastFucktivityDiscovery.time > 1000 * 60 * 60 * 5) { // 5 hours passed
             binding.text.text = getString(R.string.all_complete)
         } else {
             var seconds = 0
@@ -32,11 +31,11 @@ class NoFucktivityFragment: Fragment() {
             val handler = Handler(handlerThread.looper)
             handler.post {
                 while (true) {
-                    val time = System.currentTimeMillis() - lastDiscovery.time
-                    if (time <= 1000 * 60 * 60 * 5) {
-                        hours = 4 - time.div(1000*60*60).toInt()
-                        minutes = 59 - (time.div(1000*60)%60).toInt()
-                        seconds = 60 - (time.div(1000)%60).toInt()
+                    val time = System.currentTimeMillis() - lastFucktivityDiscovery.time
+                    if (time <= Constants.WAITING_TIME) {
+                        hours = 4 - time.div(1000 * 60 * 60).toInt()
+                        minutes = 59 - (time.div(1000 * 60) % 60).toInt()
+                        seconds = 59 - (time.div(1000) % 60).toInt()
                         if (previousSeconds != seconds) {
                             previousSeconds = seconds
                             uiHandler.post {
@@ -44,11 +43,19 @@ class NoFucktivityFragment: Fragment() {
                             }
                         }
                     } else {
+                        disposable.add(getViewModel().resetDisplayedEntry().subscribe {
+                            (activity as MainActivity).replaceFragment(getViewModel().findAppropriateFragment()!!)
+                        })
                         break
                     }
                 }
             }
         }
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        disposable.dispose()
+        super.onDestroyView()
     }
 }

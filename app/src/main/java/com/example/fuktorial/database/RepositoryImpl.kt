@@ -21,6 +21,7 @@ object RepositoryImpl : Repository {
     private val allFucktivities: BehaviorSubject<List<Fucktivity>> = BehaviorSubject.create()
     private val allFuquotes: BehaviorSubject<List<Fuquote>> = BehaviorSubject.create()
     private val lastDiscovery: BehaviorSubject<Date> = BehaviorSubject.create()
+    private val displayedEntry: BehaviorSubject<String> = BehaviorSubject.create()
 
     private val executorService = Executors.newSingleThreadExecutor()
 
@@ -31,12 +32,13 @@ object RepositoryImpl : Repository {
                 allFucktivities.onNext(fetchAllFucktivites())
                 allFuquotes.onNext(fetchAllFuquotes())
                 lastDiscovery.onNext(fetchLastDiscovery())
+                displayedEntry.onNext(fetchDisplayedEntry())
             }
         }
     }
 
     override fun close() {
-        if(db != null && (db as SQLiteDatabase).isOpen) {
+        if (db != null && (db as SQLiteDatabase).isOpen) {
             db?.close()
         }
         if (!executorService.isShutdown) {
@@ -45,20 +47,20 @@ object RepositoryImpl : Repository {
     }
 
     override fun insertFuquote(fuquote: Fuquote): Completable = Completable.fromAction {
-            val values = ContentValues().apply {
-                put(FuktorialContract.Fuquotes.COLUMN_NAME_TEXT, fuquote.text)
-                put(FuktorialContract.Fuquotes.COLUMN_NAME_DISCOVERED, if(fuquote.discovered) 1 else 0)
-            }
-            if (db?.insert(FuktorialContract.Fuquotes.TABLE_NAME, null, values) == -1L) {
-                throw RuntimeException("There was an error with inserting $values")
-            } else {
-                allFuquotes.onNext(fetchAllFuquotes())
-            }
+        val values = ContentValues().apply {
+            put(FuktorialContract.Fuquotes.COLUMN_NAME_TEXT, fuquote.text)
+            put(FuktorialContract.Fuquotes.COLUMN_NAME_DISCOVERED, if (fuquote.discovered) 1 else 0)
         }
+        if (db?.insert(FuktorialContract.Fuquotes.TABLE_NAME, null, values) == -1L) {
+            throw RuntimeException("There was an error with inserting $values")
+        } else {
+            allFuquotes.onNext(fetchAllFuquotes())
+        }
+    }
 
     override fun updateFuquote(fuquote: Fuquote): Completable = Completable.fromAction {
         val values = ContentValues().apply {
-            put(FuktorialContract.Fuquotes.COLUMN_NAME_DISCOVERED, if(fuquote.discovered) 1 else 0)
+            put(FuktorialContract.Fuquotes.COLUMN_NAME_DISCOVERED, if (fuquote.discovered) 1 else 0)
         }
         val selection = "${FuktorialContract.Fuquotes.COLUMN_NAME_TEXT} LIKE ?"
         if (db?.update(FuktorialContract.Fuquotes.TABLE_NAME, values, selection, arrayOf(fuquote.text)) == 0) {
@@ -87,7 +89,7 @@ object RepositoryImpl : Repository {
             put(FuktorialContract.Fucktivities.COLUMN_NAME_DISCOVERED, if (fucktivity.discovered) 1 else 0)
             put(FuktorialContract.Fucktivities.COLUMN_NAME_MASTERED, if (fucktivity.mastered) 1 else 0)
         }
-        if (db?.insert(FuktorialContract.Fucktivities.TABLE_NAME,null,  values) == -1L) {
+        if (db?.insert(FuktorialContract.Fucktivities.TABLE_NAME, null, values) == -1L) {
             throw RuntimeException("There was an error with inserting $values")
         } else {
             allFucktivities.onNext(fetchAllFucktivites())
@@ -118,12 +120,49 @@ object RepositoryImpl : Repository {
 
     override fun getLastDiscovery(): Observable<Date> = lastDiscovery
 
-    private fun fetchLastDiscovery(): Date {
+    override fun getDisplayedEntry(): Observable<String> = displayedEntry
+
+    override fun updateDisplayedEntry(entry: String): Completable = Completable.fromAction {
+        val values = ContentValues().apply {
+            put(FuktorialContract.Vars.COULMN_NAME_DISPLAYED_ENTRY, entry)
+        }
+        if (db?.update(FuktorialContract.Vars.TABLE_NAME, values, null, null) == 0) {
+            throw RuntimeException("There was an error with updating $values")
+        } else {
+            displayedEntry.onNext(entry)
+        }
+    }
+
+    private fun fetchDisplayedEntry(): String {
         val projection = arrayOf(
-            FuktorialContract.LastDiscoveryTime.COLUMN_NAME_TIME)
+            FuktorialContract.Vars.COULMN_NAME_DISPLAYED_ENTRY
+        )
 
         val cursor = db!!.query(
-            FuktorialContract.LastDiscoveryTime.TABLE_NAME,   // The table to query
+            FuktorialContract.Vars.TABLE_NAME,   // The table to query
+            projection,
+            null,
+            null,
+            null,
+            null,
+            null
+        )
+        var entry: String
+        with(cursor) {
+            moveToNext()
+            entry = getString(getColumnIndexOrThrow(FuktorialContract.Vars.COULMN_NAME_DISPLAYED_ENTRY))
+        }
+        cursor.close()
+        return entry
+    }
+
+    private fun fetchLastDiscovery(): Date {
+        val projection = arrayOf(
+            FuktorialContract.Vars.COLUMN_NAME_TIME
+        )
+
+        val cursor = db!!.query(
+            FuktorialContract.Vars.TABLE_NAME,   // The table to query
             projection,
             null,
             null,
@@ -134,7 +173,7 @@ object RepositoryImpl : Repository {
         var time: Long
         with(cursor) {
             moveToNext()
-            time = getString(getColumnIndexOrThrow(FuktorialContract.LastDiscoveryTime.COLUMN_NAME_TIME)).toLong()
+            time = getString(getColumnIndexOrThrow(FuktorialContract.Vars.COLUMN_NAME_TIME)).toLong()
         }
         cursor.close()
         return Date(time)
@@ -142,9 +181,9 @@ object RepositoryImpl : Repository {
 
     override fun updateLastDiscovery(date: Date): Completable = Completable.fromAction {
         val values = ContentValues().apply {
-            put(FuktorialContract.LastDiscoveryTime.COLUMN_NAME_TIME, date.time.toString())
+            put(FuktorialContract.Vars.COLUMN_NAME_TIME, date.time.toString())
         }
-        if (db?.update(FuktorialContract.LastDiscoveryTime.TABLE_NAME, values, null, null) == 0) {
+        if (db?.update(FuktorialContract.Vars.TABLE_NAME, values, null, null) == 0) {
             throw RuntimeException("There was an error with updating $values")
         } else {
             lastDiscovery.onNext(date)
@@ -157,7 +196,8 @@ object RepositoryImpl : Repository {
         val projection = arrayOf(
             FuktorialContract.Fucktivities.COLUMN_NAME_NAME,
             FuktorialContract.Fucktivities.COLUMN_NAME_DISCOVERED,
-            FuktorialContract.Fucktivities.COLUMN_NAME_MASTERED)
+            FuktorialContract.Fucktivities.COLUMN_NAME_MASTERED
+        )
 
         val cursor = db!!.query(
             FuktorialContract.Fucktivities.TABLE_NAME,   // The table to query
@@ -186,7 +226,8 @@ object RepositoryImpl : Repository {
     private fun fetchAllFuquotes(): List<Fuquote> {
         val projection = arrayOf(
             FuktorialContract.Fuquotes.COLUMN_NAME_TEXT,
-            FuktorialContract.Fuquotes.COLUMN_NAME_DISCOVERED)
+            FuktorialContract.Fuquotes.COLUMN_NAME_DISCOVERED
+        )
 
         val cursor = db!!.query(
             FuktorialContract.Fuquotes.TABLE_NAME,   // The table to query

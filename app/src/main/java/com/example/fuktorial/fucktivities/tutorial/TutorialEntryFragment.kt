@@ -8,9 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import com.example.fuktorial.FucktivitiesInfo
+import com.example.fuktorial.MainActivity
 import com.example.fuktorial.R
 import com.example.fuktorial.databinding.FragmentTutorialEntryBinding
 import com.example.fuktorial.getViewModel
+import com.example.fuktorial.replaceFragment
 import com.example.fuktorial.startFucktivity
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
@@ -35,9 +37,11 @@ class TutorialEntryFragment : Fragment() {
         view.visibility = View.GONE
         if (next == null) {
             disposable.add(
-                getViewModel().discoverFucktivity(FucktivitiesInfo.getFucktivityName(this::class.java), requireContext()).subscribe {
-                    showBanner()
-                }
+                getViewModel()
+                    .discoverFucktivity(FucktivitiesInfo.getFucktivityName(this::class.java))
+                    .subscribe {
+                        showBanner()
+                    }
             )
         } else {
             next.visibility = View.VISIBLE
@@ -50,6 +54,7 @@ class TutorialEntryFragment : Fragment() {
             .setMessage(R.string.tutorialMessage1)
             .setPositiveButton(R.string.ok) { _: DialogInterface, _: Int ->
                 startFucktivity(TutorialLevelFucktivity::class.java)
+                (activity as MainActivity).replaceFragment(getViewModel().findAppropriateFragment()!!)
             }
             .create()
             .show()

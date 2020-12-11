@@ -23,5 +23,7 @@ interface Repository {
     fun getUndicoveredFucktivities(): Observable<List<Fucktivity>>
     fun getUndiscoveredFuquotes(): Observable<List<Fuquote>>
     fun getLastDiscovery(): Observable<Date>
+    fun getDisplayedEntry(): Observable<String>
+    fun updateDisplayedEntry(entry: String): Completable
     fun updateLastDiscovery(date: Date): Completable
 }

@@ -17,14 +17,19 @@ import java.util.Date
 
 class MainViewModel(private val repository: Repository) : ViewModel() {
 
-    private var displayedEntry: String = ""
 
     private val observerFucktivities = Observer<List<Fucktivity>> {}
 
     private val observerDiscovery = Observer<Date> {}
 
+    private val observerDisplayedEntry = Observer<String> {}
+
     private var _notificationsEnabled: MutableLiveData<Boolean> = MutableLiveData()
     val notificationsEnabled: LiveData<Boolean> = _notificationsEnabled
+
+    private val displayedEntry: LiveData<String> = LiveDataReactiveStreams.fromPublisher(
+        repository.getDisplayedEntry().toFlowable(BackpressureStrategy.BUFFER)
+    )
 
     val discoveredFucktivities: LiveData<List<Fucktivity>> = LiveDataReactiveStreams.fromPublisher(
         repository.getDiscoveredFucktivities().toFlowable(BackpressureStrategy.BUFFER)
@@ -47,18 +52,29 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
     )
 
     private var _dataLoaded = MediatorLiveData<Boolean>().apply {
-        addSource(undiscoveredFucktivities) { value = it != null && lastFucktivityDiscovery.value != null }
-        addSource(lastFucktivityDiscovery) { value = it != null && undiscoveredFucktivities.value != null }
+        addSource(undiscoveredFucktivities) {
+            value = it != null &&
+            lastFucktivityDiscovery.value != null &&
+            displayedEntry.value != null
+        }
+        addSource(lastFucktivityDiscovery) {
+            value = it != null &&
+            undiscoveredFucktivities.value != null &&
+            displayedEntry.value != null
+        }
+        addSource(displayedEntry) {
+            value = it != null &&
+            lastFucktivityDiscovery.value != null &&
+            undiscoveredFucktivities.value != null
+        }
     }
     val dataLoaded: LiveData<Boolean> get() = _dataLoaded
-
-    private val FIVE_HOURS = 1000 * 60 * 60 * 5
-
 
     fun initialize(context: Context) {
         repository.open(context)
         undiscoveredFucktivities.observeForever(observerFucktivities)
         lastFucktivityDiscovery.observeForever(observerDiscovery)
+        displayedEntry.observeForever(observerDisplayedEntry)
         val preferences = PreferenceManager.getDefaultSharedPreferences(context)
         val notificationsTurnedOn = preferences.getBoolean(Constants.NOTIFICATIONS, true)
         enableNotifications(notificationsTurnedOn)
@@ -67,35 +83,35 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
     fun enableNotifications(value: Boolean) = run { _notificationsEnabled.value = value }
 
     fun findAppropriateFragment() =
-        if (displayedEntry.isNotEmpty()) {
-            FucktivitiesInfo.getEntryByName(displayedEntry)
+        if (displayedEntry.value!!.isNotEmpty()) {
+            FucktivitiesInfo.getEntryByName(displayedEntry.value!!)
         } else if (undiscoveredFucktivities.value!!.isEmpty() ||
-            System.currentTimeMillis() - lastFucktivityDiscovery.value!!.time < FIVE_HOURS
+            System.currentTimeMillis() - lastFucktivityDiscovery.value!!.time < Constants.WAITING_TIME
         ) {
-            displayedEntry = NoFucktivityFragment::class.java.simpleName
+            repository.updateDisplayedEntry(NoFucktivityFragment::class.java.simpleName).subscribe {}
             NoFucktivityFragment::class.java
         } else {
             val klas = FucktivitiesInfo.getEntryByName(undiscoveredFucktivities.value!!.random().name)
-            displayedEntry = klas!!.simpleName
+            repository.updateDisplayedEntry(klas!!.simpleName).subscribe {}
             klas
         }
 
-    fun discoverFucktivity(fucktivityName: String, context: Context): Completable {
+    fun discoverFucktivity(fucktivityName: String): Completable {
         val date = System.currentTimeMillis()
-        PreferenceManager
-            .getDefaultSharedPreferences(context)
-            .edit()
-            .putLong(Constants.LAST_DISCOVERY, date)
-            .apply()
-        repository.updateLastDiscovery(Date(date)).subscribe {}
-        displayedEntry = ""
-        return repository.updateFucktivity(Fucktivity(fucktivityName, discovered = true, mastered = false))
+        return repository
+            .updateLastDiscovery(Date(date))
+            .andThen(resetDisplayedEntry())
+            .andThen(repository.updateFucktivity(Fucktivity(fucktivityName, discovered = true, mastered = false)))
     }
+
+    fun resetDisplayedEntry() = repository.updateDisplayedEntry("")
 
     fun resetProgress(): Completable = repository.resetProgress()
 
     override fun onCleared() {
         undiscoveredFucktivities.removeObserver(observerFucktivities)
+        displayedEntry.observeForever(observerDisplayedEntry)
+        lastFucktivityDiscovery.observeForever(observerDiscovery)
         repository.close()
         super.onCleared()
     }

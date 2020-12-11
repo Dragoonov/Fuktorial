@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
             notificationsEnabled.observe(this@MainActivity, Observer {
                 if (it) scheduleNotifications() else cancelNotifications()
             })
-            dataLoaded.observe(this@MainActivity, Observer {
+            dataLoaded.observeUntilTrue(this@MainActivity, Observer {
                 if (it) {
                     replaceFragment(findAppropriateFragment()!!)
                 }

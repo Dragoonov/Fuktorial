@@ -8,9 +8,11 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.example.fuktorial.FucktivitiesInfo
+import com.example.fuktorial.MainActivity
 import com.example.fuktorial.R
 import com.example.fuktorial.databinding.DummyEntryFragmentBinding
 import com.example.fuktorial.getViewModel
+import com.example.fuktorial.replaceFragment
 import com.example.fuktorial.startFucktivity
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
@@ -30,16 +32,19 @@ class DummyEntryFragment : Fragment() {
     }
 
     fun handleClick() = disposable.add(getViewModel()
-        .discoverFucktivity(FucktivitiesInfo.getFucktivityName(this::class.java), requireContext())
-        .subscribe { showBanner() }
+        .discoverFucktivity(FucktivitiesInfo.getFucktivityName(this::class.java))
+        .subscribe {
+            showBanner()
+        }
     )
 
-    fun showBanner() =
+    private fun showBanner() =
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.congratulations)
             .setMessage(R.string.tutorialMessage1)
             .setPositiveButton(R.string.ok) { _: DialogInterface, _: Int ->
                 startFucktivity(DummyLevelFucktivity::class.java)
+                (activity as MainActivity).replaceFragment(getViewModel().findAppropriateFragment()!!)
             }
             .create()
             .show()

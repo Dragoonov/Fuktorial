@@ -9,17 +9,19 @@ import android.provider.BaseColumns
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.commit
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import com.example.fuktorial.database.FuktorialContract
 
 fun <T : Fragment> FragmentActivity.replaceFragment(fragmentClass: Class<T>, args: Bundle? = null) {
     val tag = "Current Fragment"
-
+    if (supportFragmentManager.fragments.isNotEmpty() &&
+        supportFragmentManager.fragments[0]::class.java == fragmentClass) {
+        return
+    }
     supportFragmentManager.commit {
-        if (supportFragmentManager.backStackEntryCount == 0) {
-            add(R.id.fragment_container, fragmentClass, args, tag)
-        } else {
-            replace(R.id.fragment_container, fragmentClass, args, tag)
-        }
+        replace(R.id.fragment_container, fragmentClass, args, tag)
         addToBackStack(null)
     }
 }
@@ -29,14 +31,25 @@ fun <T : Activity> Fragment.startFucktivity(fucktivityClass: Class<T>) {
     activity?.startActivity(intent)
 }
 
+fun LiveData<Boolean>.observeUntilTrue(lifecycleOwner: LifecycleOwner, observer: Observer<Boolean>) {
+    observe(lifecycleOwner, object : Observer<Boolean> {
+        override fun onChanged(value: Boolean?) {
+            observer.onChanged(value)
+            if (value == true) {
+                removeObserver(this)
+            }
+        }
+    })
+}
+
 fun SQLiteDatabase.clearDatabase() {
     val sqlDeleteFuquotes = "DROP TABLE IF EXISTS ${FuktorialContract.Fuquotes.TABLE_NAME}"
     val sqlDeleteFucktivities =
         "DROP TABLE IF EXISTS ${FuktorialContract.Fucktivities.TABLE_NAME}"
-    val sqlDeleteLastDIscovery = "DROP TABLE IF EXISTS ${FuktorialContract.LastDiscoveryTime.TABLE_NAME}"
+    val sqlDeleteVars = "DROP TABLE IF EXISTS ${FuktorialContract.Vars.TABLE_NAME}"
     execSQL(sqlDeleteFucktivities)
     execSQL(sqlDeleteFuquotes)
-    execSQL(sqlDeleteLastDIscovery)
+    execSQL(sqlDeleteVars)
 }
 
 fun SQLiteDatabase.createAndInitialize() {
@@ -54,9 +67,11 @@ fun SQLiteDatabase.createAndInitialize() {
                 "${FuktorialContract.Fucktivities.COLUMN_NAME_MASTERED} INTEGER)"
 
     val sqlCreateLastDiscovery =
-        "CREATE TABLE ${FuktorialContract.LastDiscoveryTime.TABLE_NAME} (" +
+        "CREATE TABLE ${FuktorialContract.Vars.TABLE_NAME} (" +
                 "${BaseColumns._ID} INTEGER PRIMARY KEY," +
-                "${FuktorialContract.LastDiscoveryTime.COLUMN_NAME_TIME} TEXT)"
+                "${FuktorialContract.Vars.COLUMN_NAME_TIME} TEXT," +
+                "${FuktorialContract.Vars.COULMN_NAME_DISPLAYED_ENTRY} TEXT)"
+
 
     execSQL(sqlCreateFuquotes)
     execSQL(sqlCreateFucktivities)
@@ -84,13 +99,11 @@ fun SQLiteDatabase.createAndInitialize() {
             })
     }
     insert(
-        FuktorialContract.LastDiscoveryTime.TABLE_NAME,
+        FuktorialContract.Vars.TABLE_NAME,
         null,
         ContentValues().apply {
-            put(
-                FuktorialContract.LastDiscoveryTime.COLUMN_NAME_TIME,
-                "0"
-            )
+            put(FuktorialContract.Vars.COLUMN_NAME_TIME, "0")
+            put(FuktorialContract.Vars.COULMN_NAME_DISPLAYED_ENTRY, "")
         })
 }
 
