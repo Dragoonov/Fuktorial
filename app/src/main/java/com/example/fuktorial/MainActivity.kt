@@ -21,6 +21,7 @@ import com.example.fuktorial.database.models.Fucktivity
 import com.example.fuktorial.databinding.ActivityMainBinding
 import com.example.fuktorial.notifications.NotificationWorker
 import com.example.fuktorial.settings.SettingsFragment
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -46,9 +47,6 @@ class MainActivity : AppCompatActivity() {
                     replaceFragment(findAppropriateFragment()!!)
                 }
             })
-            resetProgress().subscribe {
-                Log.d("dd", "Usuniete")
-            }
         }
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

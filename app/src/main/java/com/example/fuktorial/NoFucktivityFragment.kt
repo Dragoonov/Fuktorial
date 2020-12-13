@@ -20,7 +20,7 @@ class NoFucktivityFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val lastFucktivityDiscovery = getViewModel().lastFucktivityDiscovery.value!!
         val binding = NoFucktivityFragmentBinding.inflate(layoutInflater, container, false)
-        if (System.currentTimeMillis() - lastFucktivityDiscovery.time > 1000 * 60 * 60 * 5) { // 5 hours passed
+        if (getViewModel().undiscoveredFucktivities.value!!.isEmpty()) { // 5 hours passed
             binding.text.text = getString(R.string.all_complete)
         } else {
             var seconds = 0
@@ -42,7 +42,7 @@ class NoFucktivityFragment : Fragment() {
                                 binding.text.text = getString(R.string.time_left, hours, minutes, seconds)
                             }
                         }
-                    } else {
+                    } else if (time > Constants.WAITING_TIME + 1000) {
                         disposable.add(getViewModel().resetDisplayedEntry().subscribe {
                             (activity as MainActivity).replaceFragment(getViewModel().findAppropriateFragment()!!)
                         })

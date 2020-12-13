@@ -43,7 +43,7 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
         repository.getDiscoveredFuquotes().toFlowable(BackpressureStrategy.BUFFER)
     )
 
-    private val undiscoveredFucktivities: LiveData<List<Fucktivity>> = LiveDataReactiveStreams.fromPublisher(
+    val undiscoveredFucktivities: LiveData<List<Fucktivity>> = LiveDataReactiveStreams.fromPublisher(
         repository.getUndicoveredFucktivities().toFlowable(BackpressureStrategy.BUFFER)
     )
 
