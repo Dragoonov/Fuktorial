@@ -44,7 +44,7 @@ class DummyEntryFragment : Fragment() {
             .setMessage(R.string.tutorialMessage1)
             .setPositiveButton(R.string.ok) { _: DialogInterface, _: Int ->
                 startFucktivity(DummyLevelFucktivity::class.java)
-                (activity as MainActivity).replaceFragment(getViewModel().findAppropriateFragment()!!)
+                (activity as MainActivity).replaceFragment(getViewModel().refreshNextFragment())
             }
             .create()
             .show()

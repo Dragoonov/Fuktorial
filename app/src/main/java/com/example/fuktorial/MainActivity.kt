@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
             })
             dataLoaded.observeUntilTrue(this@MainActivity, Observer {
                 if (it) {
-                    replaceFragment(findAppropriateFragment()!!)
+                    replaceFragment(refreshNextFragment())
                 }
             })
         }
@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         binding.bottomNavigationView.setOnNavigationItemSelectedListener {
             when (it.itemId) {
-                R.id.fucktivity -> replaceFragment(viewModel.findAppropriateFragment()!!)
+                R.id.fucktivity -> replaceFragment(viewModel.refreshNextFragment())
                 R.id.tasks -> Unit
                 R.id.collection -> replaceFragment(CollectionFragment::class.java)
                 R.id.settings -> replaceFragment(SettingsFragment::class.java)
@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun cancelNotifications() =WorkManager.getInstance(this).cancelUniqueWork(NotificationWorker.WORK_NAME)
+    private fun cancelNotifications() = WorkManager.getInstance(this).cancelUniqueWork(NotificationWorker.WORK_NAME)
 
     private fun scheduleNotifications() {
         val workRequest = PeriodicWorkRequestBuilder<NotificationWorker>(1, TimeUnit.DAYS)

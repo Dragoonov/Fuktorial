@@ -18,33 +18,27 @@ class NoFucktivityFragment : Fragment() {
     private val disposable = CompositeDisposable()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val lastFucktivityDiscovery = getViewModel().lastFucktivityDiscovery.value!!
         val binding = NoFucktivityFragmentBinding.inflate(layoutInflater, container, false)
-        if (getViewModel().undiscoveredFucktivities.value!!.isEmpty()) { // 5 hours passed
+        if (getViewModel().undiscoveredFucktivities.value!!.isEmpty()) {
             binding.text.text = getString(R.string.all_complete)
         } else {
-            var seconds = 0
-            var minutes: Int
-            var hours: Int
-            var previousSeconds = seconds
             handlerThread.start()
             val handler = Handler(handlerThread.looper)
+            val zeroTime = Triple(0,0,0)
+            var previousSeconds = 0
             handler.post {
                 while (true) {
-                    val time = System.currentTimeMillis() - lastFucktivityDiscovery.time
-                    if (time <= Constants.WAITING_TIME) {
-                        hours = 4 - time.div(1000 * 60 * 60).toInt()
-                        minutes = 59 - (time.div(1000 * 60) % 60).toInt()
-                        seconds = 59 - (time.div(1000) % 60).toInt()
-                        if (previousSeconds != seconds) {
-                            previousSeconds = seconds
+                    val timeLeft = getViewModel().calculateTimeLeft(getViewModel().lastFucktivityDiscovery.value!!.time)
+                    if (timeLeft != zeroTime) {
+                        if (previousSeconds != timeLeft.third) {
+                            previousSeconds = timeLeft.third
                             uiHandler.post {
-                                binding.text.text = getString(R.string.time_left, hours, minutes, seconds)
+                                binding.text.text = getString(R.string.time_left, timeLeft.first, timeLeft.second, timeLeft.third)
                             }
                         }
-                    } else if (time > Constants.WAITING_TIME + 1000) {
+                    } else {
                         disposable.add(getViewModel().resetDisplayedEntry().subscribe {
-                            (activity as MainActivity).replaceFragment(getViewModel().findAppropriateFragment()!!)
+                            (activity as MainActivity).replaceFragment(getViewModel().refreshNextFragment())
                         })
                         break
                     }

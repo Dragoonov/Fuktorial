@@ -1,6 +1,9 @@
 package com.example.fuktorial
 
 import android.content.Context
+import android.os.Bundle
+import android.util.Log
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.LiveDataReactiveStreams
 import androidx.lifecycle.MediatorLiveData
@@ -17,7 +20,7 @@ import java.util.Date
 
 class MainViewModel(private val repository: Repository) : ViewModel() {
 
-
+    private val TAG = MainViewModel::class.java.simpleName
     private val observerFucktivities = Observer<List<Fucktivity>> {}
 
     private val observerDiscovery = Observer<Date> {}
@@ -52,23 +55,19 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
     )
 
     private var _dataLoaded = MediatorLiveData<Boolean>().apply {
-        addSource(undiscoveredFucktivities) {
-            value = it != null &&
-            lastFucktivityDiscovery.value != null &&
-            displayedEntry.value != null
-        }
-        addSource(lastFucktivityDiscovery) {
-            value = it != null &&
-            undiscoveredFucktivities.value != null &&
-            displayedEntry.value != null
-        }
-        addSource(displayedEntry) {
-            value = it != null &&
-            lastFucktivityDiscovery.value != null &&
-            undiscoveredFucktivities.value != null
-        }
+        addSource(undiscoveredFucktivities, predicate(this))
+        addSource(lastFucktivityDiscovery, predicate(this))
+        addSource(displayedEntry, predicate(this))
     }
     val dataLoaded: LiveData<Boolean> get() = _dataLoaded
+
+    private val predicate: (MutableLiveData<Boolean>) -> Observer<Any> = { liveData ->
+        Observer {
+            liveData.value = undiscoveredFucktivities.value != null &&
+                    lastFucktivityDiscovery.value != null &&
+                    displayedEntry.value != null
+        }
+    }
 
     fun initialize(context: Context) {
         repository.open(context)
@@ -82,18 +81,21 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
 
     fun enableNotifications(value: Boolean) = run { _notificationsEnabled.value = value }
 
-    fun findAppropriateFragment() =
+    fun refreshNextFragment(): Class<out Fragment> {
+        val fragment = findAppropriateFragment()
+        repository.updateDisplayedEntry(fragment!!.simpleName).subscribe()
+        return fragment
+    }
+
+    private fun findAppropriateFragment() =
         if (displayedEntry.value!!.isNotEmpty()) {
             FucktivitiesInfo.getEntryByName(displayedEntry.value!!)
         } else if (undiscoveredFucktivities.value!!.isEmpty() ||
             System.currentTimeMillis() - lastFucktivityDiscovery.value!!.time < Constants.WAITING_TIME
         ) {
-            repository.updateDisplayedEntry(NoFucktivityFragment::class.java.simpleName).subscribe {}
             NoFucktivityFragment::class.java
         } else {
-            val klas = FucktivitiesInfo.getEntryByName(undiscoveredFucktivities.value!!.random().name)
-            repository.updateDisplayedEntry(klas!!.simpleName).subscribe {}
-            klas
+            FucktivitiesInfo.getEntryByName(undiscoveredFucktivities.value!!.random().name)
         }
 
     fun discoverFucktivity(fucktivityName: String): Completable {
@@ -107,6 +109,14 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
     fun resetDisplayedEntry() = repository.updateDisplayedEntry("")
 
     fun resetProgress(): Completable = repository.resetProgress()
+
+    fun calculateTimeLeft(timePassed: Long): Triple<Int, Int, Int> {
+        val time = System.currentTimeMillis() - timePassed
+        val hours = 4 - time.div(1000 * 60 * 60).toInt()
+        val minutes = 59 - (time.div(1000 * 60) % 60).toInt()
+        val seconds = 59 - (time.div(1000) % 60).toInt()
+        return Triple(hours, minutes, seconds)
+    }
 
     override fun onCleared() {
         undiscoveredFucktivities.removeObserver(observerFucktivities)

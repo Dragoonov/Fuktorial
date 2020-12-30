@@ -4,6 +4,7 @@ import android.content.DialogInterface
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.fuktorial.FucktivitiesInfo
@@ -16,28 +17,25 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class TutorialLevelFucktivity : AppCompatActivity() {
 
-    private val disposable = CompositeDisposable()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val viewModel =  ViewModelProvider(this, object : ViewModelProvider.Factory {
+        val viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 return modelClass.getConstructor(Repository::class.java).newInstance(RepositoryImpl)
             }
         }).get(TutorialViewModel::class.java)
-        viewModel.initialize(this)
+        viewModel.apply {
+            initialize(this@TutorialLevelFucktivity)
+            showDialog.observe(this@TutorialLevelFucktivity, Observer {
+                if (it) {
+                    showFinishDialog()
+                }
+            })
+        }
         val binding = FucktivityTutorialLevelBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.button.setOnClickListener {
-            viewModel.numberOfClicks += 1
-            if (viewModel.numberOfClicks > 10) {
-                disposable.add(
-                viewModel.masterFucktivity(FucktivitiesInfo.getFucktivityName(this::class.java))
-                    .subscribe {
-                        showFinishDialog()
-                    }
-                )
-            }
+            viewModel.onClick()
         }
         showExplanationDialog()
     }
@@ -59,9 +57,4 @@ class TutorialLevelFucktivity : AppCompatActivity() {
             }
             .create()
             .show()
-
-    override fun onDestroy() {
-        disposable.dispose()
-        super.onDestroy()
-    }
 }
