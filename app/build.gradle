@@ -59,6 +59,8 @@ dependencies {
     implementation 'io.reactivex.rxjava3:rxjava:3.0.0'
     kapt 'com.google.dagger:dagger-compiler:2.27'
     testImplementation 'junit:junit:4.13.1'
+    testImplementation "io.mockk:mockk:1.10.3"
+    testImplementation 'android.arch.core:core-testing:1.1.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 

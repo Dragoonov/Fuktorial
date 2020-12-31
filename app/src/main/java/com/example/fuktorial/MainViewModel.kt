@@ -54,13 +54,6 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
         repository.getLastDiscovery().toFlowable(BackpressureStrategy.BUFFER)
     )
 
-    private var _dataLoaded = MediatorLiveData<Boolean>().apply {
-        addSource(undiscoveredFucktivities, predicate(this))
-        addSource(lastFucktivityDiscovery, predicate(this))
-        addSource(displayedEntry, predicate(this))
-    }
-    val dataLoaded: LiveData<Boolean> get() = _dataLoaded
-
     private val predicate: (MutableLiveData<Boolean>) -> Observer<Any> = { liveData ->
         Observer {
             liveData.value = undiscoveredFucktivities.value != null &&
@@ -68,6 +61,14 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
                     displayedEntry.value != null
         }
     }
+
+    private var _dataLoaded = MediatorLiveData<Boolean>().apply {
+        addSource(undiscoveredFucktivities, predicate(this))
+        addSource(lastFucktivityDiscovery, predicate(this))
+        addSource(displayedEntry, predicate(this))
+    }
+    val dataLoaded: LiveData<Boolean> get() = _dataLoaded
+
 
     fun initialize(context: Context) {
         repository.open(context)
@@ -120,8 +121,8 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
 
     override fun onCleared() {
         undiscoveredFucktivities.removeObserver(observerFucktivities)
-        displayedEntry.observeForever(observerDisplayedEntry)
-        lastFucktivityDiscovery.observeForever(observerDiscovery)
+        displayedEntry.removeObserver(observerDisplayedEntry)
+        lastFucktivityDiscovery.removeObserver(observerDiscovery)
         repository.close()
         super.onCleared()
     }
