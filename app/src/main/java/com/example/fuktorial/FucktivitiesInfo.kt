@@ -1,7 +1,5 @@
 package com.example.fuktorial
 
-import android.app.Activity
-import androidx.fragment.app.Fragment
 import com.example.fuktorial.fucktivities.dummy.DummyEntryFragment
 import com.example.fuktorial.fucktivities.dummy.DummyLevelFucktivity
 import com.example.fuktorial.fucktivities.tutorial.TutorialEntryFragment
@@ -34,6 +32,6 @@ object FucktivitiesInfo {
             .removeSuffix("LevelFucktivity")
             .removeSuffix("EntryFragment")
         it.name.contains(name)
-    }
+    } ?: NoFucktivityFragment::class.java
 
 }

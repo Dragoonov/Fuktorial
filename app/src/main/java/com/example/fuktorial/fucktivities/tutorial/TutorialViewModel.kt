@@ -12,7 +12,7 @@ class TutorialViewModel(repository: Repository): FucktivityViewModel(repository)
     private var numberOfClicks = 0
     private val disposable = CompositeDisposable()
 
-    private var _showDialog = MutableLiveData<Boolean>(false)
+    private var _showDialog = MutableLiveData(false)
     val showDialog: LiveData<Boolean> get() = _showDialog
 
     fun onClick() {

@@ -84,7 +84,7 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
 
     fun refreshNextFragment(): Class<out Fragment> {
         val fragment = findAppropriateFragment()
-        repository.updateDisplayedEntry(fragment!!.simpleName).subscribe()
+        repository.updateDisplayedEntry(fragment.simpleName).subscribe()
         return fragment
     }
 
@@ -111,8 +111,8 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
 
     fun resetProgress(): Completable = repository.resetProgress()
 
-    fun calculateTimeLeft(timePassed: Long): Triple<Int, Int, Int> {
-        val time = System.currentTimeMillis() - timePassed
+    fun calculateTimeLeft(timePassed: Long, startingTime: Long = System.currentTimeMillis()): Triple<Int, Int, Int> {
+        val time = startingTime - timePassed
         val hours = 4 - time.div(1000 * 60 * 60).toInt()
         val minutes = 59 - (time.div(1000 * 60) % 60).toInt()
         val seconds = 59 - (time.div(1000) % 60).toInt()
