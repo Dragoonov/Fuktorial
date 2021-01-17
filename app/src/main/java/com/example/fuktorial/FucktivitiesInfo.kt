@@ -25,12 +25,14 @@ object FucktivitiesInfo {
         .simpleName
         .removeSuffix("LevelFucktivity")
         .removeSuffix("EntryFragment")
+        .removeSuffix("ViewModel")
 
 
     fun getEntryByName(fucktivityName: String) = entriesList.find {
         val name = fucktivityName
             .removeSuffix("LevelFucktivity")
             .removeSuffix("EntryFragment")
+            .removeSuffix("ViewModel")
         it.name.contains(name)
     } ?: NoFucktivityFragment::class.java
 

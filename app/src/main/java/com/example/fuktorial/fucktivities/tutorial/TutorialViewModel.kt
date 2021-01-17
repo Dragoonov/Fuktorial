@@ -15,9 +15,12 @@ class TutorialViewModel(repository: Repository): FucktivityViewModel(repository)
     private var _showDialog = MutableLiveData(false)
     val showDialog: LiveData<Boolean> get() = _showDialog
 
+    private var shown = false
+
     fun onClick() {
         numberOfClicks += 1
-        if (numberOfClicks > 10) {
+        if (numberOfClicks > 10 && !shown) {
+            shown = true
             disposable.add(
                 masterFucktivity(FucktivitiesInfo.getFucktivityName(this::class.java))
                     .subscribe {
