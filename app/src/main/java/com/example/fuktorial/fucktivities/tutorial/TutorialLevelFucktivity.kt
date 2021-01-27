@@ -26,7 +26,7 @@ class TutorialLevelFucktivity : AppCompatActivity() {
         }).get(TutorialViewModel::class.java)
         viewModel.apply {
             initialize(this@TutorialLevelFucktivity)
-            showDialog.observe(this@TutorialLevelFucktivity, Observer {
+            showDialog.observe(this@TutorialLevelFucktivity, {
                 if (it) {
                     showFinishDialog()
                 }

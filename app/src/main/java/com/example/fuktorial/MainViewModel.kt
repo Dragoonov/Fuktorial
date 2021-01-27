@@ -14,6 +14,7 @@ import androidx.preference.PreferenceManager
 import com.example.fuktorial.database.Repository
 import com.example.fuktorial.database.models.Fucktivity
 import com.example.fuktorial.database.models.Fuquote
+import com.example.fuktorial.fucktivities.fibbonaccibasket.FibbonacciBasketEntryFragment
 import io.reactivex.rxjava3.core.BackpressureStrategy
 import io.reactivex.rxjava3.core.Completable
 import java.util.Date
@@ -83,21 +84,22 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
     fun enableNotifications(value: Boolean) = run { _notificationsEnabled.value = value }
 
     fun refreshNextFragment(): Class<out Fragment> {
-        val fragment = findAppropriateFragment()
+        val fragment = findAppropriateFragment(FibbonacciBasketEntryFragment::class.java)
         repository.updateDisplayedEntry(fragment.simpleName).subscribe()
         return fragment
     }
 
-    private fun findAppropriateFragment() =
-        if (displayedEntry.value!!.isNotEmpty()) {
-            FucktivitiesInfo.getEntryByName(displayedEntry.value!!)
-        } else if (undiscoveredFucktivities.value!!.isEmpty() ||
-            System.currentTimeMillis() - lastFucktivityDiscovery.value!!.time < Constants.WAITING_TIME
-        ) {
-            NoFucktivityFragment::class.java
-        } else {
-            FucktivitiesInfo.getEntryByName(undiscoveredFucktivities.value!!.random().name)
-        }
+    private fun findAppropriateFragment(fragment: Class<out Fragment>? = null) =
+        fragment
+            ?: if (displayedEntry.value!!.isNotEmpty()) {
+                FucktivitiesInfo.getEntryByName(displayedEntry.value!!)
+            } else if (undiscoveredFucktivities.value!!.isEmpty() ||
+                System.currentTimeMillis() - lastFucktivityDiscovery.value!!.time < Constants.WAITING_TIME
+            ) {
+                NoFucktivityFragment::class.java
+            } else {
+                FucktivitiesInfo.getEntryByName(undiscoveredFucktivities.value!!.random().name)
+            }
 
     fun discoverFucktivity(fucktivityName: String): Completable {
         val date = System.currentTimeMillis()

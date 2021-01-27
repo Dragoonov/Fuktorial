@@ -2,19 +2,23 @@ package com.example.fuktorial
 
 import com.example.fuktorial.fucktivities.dummy.DummyEntryFragment
 import com.example.fuktorial.fucktivities.dummy.DummyLevelFucktivity
+import com.example.fuktorial.fucktivities.fibbonaccibasket.FibbonacciBasketEntryFragment
+import com.example.fuktorial.fucktivities.fibbonaccibasket.FibbonacciBasketFucktivity
 import com.example.fuktorial.fucktivities.tutorial.TutorialEntryFragment
 import com.example.fuktorial.fucktivities.tutorial.TutorialLevelFucktivity
 
 object FucktivitiesInfo {
     val fucktivitiesList = listOf(
         TutorialLevelFucktivity::class.java,
-        DummyLevelFucktivity::class.java
+        DummyLevelFucktivity::class.java,
+        FibbonacciBasketFucktivity::class.java
     )
 
     val entriesList = listOf(
         TutorialEntryFragment::class.java,
         DummyEntryFragment::class.java,
-        NoFucktivityFragment::class.java
+        NoFucktivityFragment::class.java,
+        FibbonacciBasketEntryFragment::class.java
     )
 
     fun getFucktivityLevelClass(name: String) = fucktivitiesList.find {

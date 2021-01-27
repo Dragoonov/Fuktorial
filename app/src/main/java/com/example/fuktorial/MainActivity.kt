@@ -39,10 +39,10 @@ class MainActivity : AppCompatActivity() {
         }).get(MainViewModel::class.java)
         viewModel.apply {
             initialize(this@MainActivity)
-            notificationsEnabled.observe(this@MainActivity, Observer {
+            notificationsEnabled.observe(this@MainActivity, {
                 if (it) scheduleNotifications() else cancelNotifications()
             })
-            dataLoaded.observeUntilTrue(this@MainActivity, Observer {
+            dataLoaded.observeUntilTrue(this@MainActivity, {
                 if (it) {
                     replaceFragment(refreshNextFragment())
                 }
